@@ -6,7 +6,7 @@ import path from 'node:path';
 import os from 'node:os';
 import * as ops from './ops.js';
 
-const VERSION = '0.2.2';
+const VERSION = '0.2.3';
 const PROTOCOL = '2025-06-18';
 
 const kommune = { type: 'string', description: 'Kommune: portal slug (baerum), name (Bærum) or kommunenummer (3201).' };
@@ -49,7 +49,7 @@ const TOOLS = [
   },
   {
     name: 'get_case',
-    description: 'Get a case (arkivsak, id starting "a-") with date (ISO), caseType, handler, status (the portal's own Norwegian text, e.g. "Under behandling", "Avsluttet") and its list of published documents. The list does not say whether a document has files; set with_files to add fileCount and orderOnly per document (one extra request per document, max 30).',
+    description: 'Get a case (arkivsak, id starting "a-") with date (ISO), caseType, handler, status (the portal\'s own Norwegian text, e.g. "Under behandling", "Avsluttet") and its list of published documents. The list does not say whether a document has files; set with_files to add fileCount and orderOnly per document (one extra request per document, max 30).',
     inputSchema: { type: 'object', properties: { kommune, case_id: { type: 'string' }, with_files: { type: 'boolean' } }, required: ['kommune', 'case_id'] },
     run: (a) => ops.getCase(a.kommune, a.case_id, { withFiles: a.with_files }),
   },

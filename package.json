@@ -1,6 +1,6 @@
 {
   "name": "unofficial-acos-innsyn",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Unofficial client, CLI and MCP server for Norwegian kommuner's ACOS Innsyn+ journals (innsynpluss.onacos.no).",
   "type": "module",
   "bin": {
@@ -15,7 +15,7 @@
   "files": ["src", "data", "scripts", ".claude-plugin", ".mcp.json", "skills", "AGENTS.md"],
   "scripts": {
     "registry": "node scripts/build-registry.js",
-    "test": "node --test test/*.test.js"
+    "test": "for f in src/*.js scripts/*.js; do node --check \"$f\" || exit 1; done && node --test test/*.test.js"
   },
   "engines": { "node": ">=18.17" },
   "peerDependencies": { "playwright": ">=1.40" },
