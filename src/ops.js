@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { Portal, InnsynError, fileName } from './client.js';
+import { Portal, InnsynError, fileName, declaresFormat } from './client.js';
 import { discover, findPortal, loadRegistry, slugify } from './discover.js';
 
 const portals = new Map();
@@ -14,11 +14,19 @@ function localCache() {
 }
 
 /** Resolve a kommune (slug, name or number) to a ready Portal. Discovers and caches unknown slugs. */
-export async function portal(kommune) {
+export async function portal(kommune, { fresh = false } = {}) {
   const key = String(kommune).trim().toLowerCase();
-  if (portals.has(key)) return portals.get(key);
-  let cfg = findPortal(key);
-  if (!cfg || !cfg.searchPath) {
+  if (!fresh && portals.has(key)) return portals.get(key);
+  let cfg = fresh ? null : findPortal(key);
+  if (fresh) {
+    const slug = findPortal(key)?.slug || slugify(key);
+    cfg = await discover(slug);
+    if (!cfg?.searchPath) throw new InnsynError(`${kommune}: the portal no longer answers as recorded, and rediscovery found no searchable journal.`);
+    const cache = localCache();
+    cache.data[slug] = cfg;
+    fs.mkdirSync(path.dirname(cache.f), { recursive: true });
+    fs.writeFileSync(cache.f, JSON.stringify(cache.data, null, 1));
+  } else if (!cfg || !cfg.searchPath) {
     const cache = localCache();
     const slug = cfg?.slug || slugify(key);
     cfg = cache.data[slug];
@@ -34,6 +42,22 @@ export async function portal(kommune) {
   const p = new Portal(cfg);
   portals.set(key, p);
   return p;
+}
+
+/**
+ * Run fn(portal). If the portal answers as if its recorded IDs are stale (it moved, like Bærum
+ * did in 2026), rediscover it once and retry.
+ */
+async function withPortal(kommune, fn) {
+  const p = await portal(kommune);
+  try {
+    return await fn(p);
+  } catch (e) {
+    const status = e?.cause?.status;
+    const stale = e instanceof InnsynError && (status >= 500 || status === 404 || /^Could not open /.test(e.message));
+    if (!stale) throw e;
+    return fn(await portal(kommune, { fresh: true }));
+  }
 }
 
 export function listPortals({ withSource } = {}) {
@@ -69,8 +93,7 @@ async function sources(p, source) {
 }
 
 export async function datasources(kommune) {
-  const p = await portal(kommune);
-  const list = await sources(p);
+  const list = await withPortal(kommune, (p) => sources(p));
   return list.map((d) => ({
     id: d.id,
     name: d.name,
@@ -79,13 +102,14 @@ export async function datasources(kommune) {
 }
 
 export async function search(kommune, q) {
-  const p = await portal(kommune);
-  const out = [];
-  for (const ds of await sources(p, q.source)) {
-    const r = await p.searchAll({ ...q, datasource: ds.id }, q.max ?? 50);
-    out.push({ source: ds.name, total: r.total, items: r.items });
-  }
-  return out;
+  return withPortal(kommune, async (p) => {
+    const out = [];
+    for (const ds of await sources(p, q.source)) {
+      const r = await p.searchAll({ ...q, datasource: ds.id }, q.max ?? 50);
+      out.push({ source: ds.name, total: r.total, items: r.items });
+    }
+    return out;
+  });
 }
 
 /**
@@ -94,7 +118,7 @@ export async function search(kommune, q) {
  */
 export async function getCase(kommune, caseId, { withFiles = false, maxDocs = 30 } = {}) {
   const p = await portal(kommune);
-  const c = await p.getCase(caseId);
+  const c = await withPortal(kommune, (q) => q.getCase(caseId));
   if (withFiles) {
     for (const d of c.documents.slice(0, maxDocs)) {
       const doc = await p.getDocument(d.id);
@@ -107,26 +131,34 @@ export async function getCase(kommune, caseId, { withFiles = false, maxDocs = 30
 }
 
 export async function getDocument(kommune, docId) {
-  return (await portal(kommune)).getDocument(docId);
+  return withPortal(kommune, (p) => p.getDocument(docId));
 }
 
 /**
  * Download every file of a document, or of every document in a case.
  * Returns a manifest; order-only documents are listed but not fetched.
  */
-export async function download(kommune, id, outDir, { skipExisting = true } = {}) {
+export async function download(kommune, id, outDir, { skipExisting = true, maxFiles = 60 } = {}) {
   const p = await portal(kommune);
   let docIds;
   let caseInfo;
   if (id.startsWith('a-')) {
-    caseInfo = await p.getCase(id);
+    caseInfo = await withPortal(kommune, (q) => q.getCase(id));
     docIds = caseInfo.documents.map((d) => d.id);
   } else {
     docIds = [id];
   }
   const manifest = { case: caseInfo ? { id: caseInfo.id, title: caseInfo.title, caseNumber: caseInfo.caseNumber } : undefined, outDir, files: [], orderOnly: [] };
-  for (const did of docIds) {
-    const doc = await p.getDocument(did);
+  let fetched = 0;
+  outer: for (const did of docIds) {
+    let doc;
+    try {
+      doc = await p.getDocument(did);
+    } catch (e) {
+      if (!(e instanceof InnsynError)) throw e;
+      manifest.stopped = { reason: e.message, atDocument: did };
+      break;
+    }
     if (doc.orderOnly) { manifest.orderOnly.push({ id: doc.id, title: doc.title, documentId: doc.documentId, date: doc.date }); continue; }
     const used = new Map();
     for (const f of doc.files) {
@@ -141,9 +173,21 @@ export async function download(kommune, id, outDir, { skipExisting = true } = {}
         manifest.files.push({ path: dest, skipped: true, bytes: fs.statSync(dest).size, ...base });
         continue;
       }
-      const r = await p.downloadFile(f.url, dest);
-      manifest.files.push({ path: r.path, bytes: r.bytes, contentType: r.contentType, via: r.via, ...base });
+      if (fetched >= maxFiles) {
+        manifest.stopped = { reason: `Reached max_files (${maxFiles}). Run again to continue; files on disk are skipped.`, atDocument: did };
+        break outer;
+      }
+      try {
+        const r = await p.downloadFile(f.url, dest, { declaredPdf: declaresFormat(f) });
+        fetched += 1;
+        manifest.files.push({ path: r.path, bytes: r.bytes, contentType: r.contentType, via: r.via, ...base });
+      } catch (e) {
+        if (!(e instanceof InnsynError)) throw e;
+        manifest.stopped = { reason: e.message, atDocument: did, atFile: f.title };
+        break outer;
+      }
     }
   }
+  manifest.summary = { fetched, skipped: manifest.files.filter((x) => x.skipped).length, orderOnly: manifest.orderOnly.length, complete: !manifest.stopped };
   return manifest;
 }

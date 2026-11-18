@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { createRequire } from 'node:module';
-import { pathToFileURL } from 'node:url';
+import { pathToFileURL, fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
 
 export const BASE = 'https://innsynpluss.onacos.no';
@@ -14,6 +14,20 @@ const API = `${BASE}/api/presentation/v2/nye-innsyn`;
 const DEFAULT_UA = 'unofficial-acos-innsyn (+https://github.com/fipp/unofficial-acos-innsyn-plugin)';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// All kommuner share one host, so throttle per process, not per portal. Calls queue on a promise chain,
+// so parallel MCP calls cannot slip through at the same moment.
+let throttleChain = Promise.resolve();
+let lastRequest = 0;
+function throttle(ms) {
+  const turn = throttleChain.then(async () => {
+    const wait = lastRequest + ms - Date.now();
+    if (wait > 0) await sleep(wait);
+    lastRequest = Date.now();
+  });
+  throttleChain = turn.catch(() => {});
+  return turn;
+}
 
 export class InnsynError extends Error {}
 
@@ -29,6 +43,7 @@ class CookieJar {
   }
   set(name, value) { this.map.set(name, value); }
   has(name) { return this.map.has(name); }
+  delete(name) { this.map.delete(name); }
   header() { return [...this.map].map(([k, v]) => `${k}=${v}`).join('; '); }
 }
 
@@ -55,7 +70,7 @@ export async function loadPlaywright() {
     } catch { /* not in this dir */ }
   }
   const nodePrefix = path.join(path.dirname(process.execPath), '..', 'lib', 'node_modules');
-  const bases = [process.cwd(), path.dirname(new URL(import.meta.url).pathname), globalRoot, ...binRoots, nodePrefix];
+  const bases = [process.cwd(), path.dirname(fileURLToPath(import.meta.url)), globalRoot, ...binRoots, nodePrefix];
   for (const base of [...new Set(bases.filter(Boolean))]) {
     try { tries.push(createRequire(path.join(base, 'noop.js')).resolve('playwright')); } catch { /* not there */ }
   }
@@ -110,15 +125,12 @@ export class Portal {
     this.fileDelayMs = opt.fileDelayMs ?? Number(process.env.ACOS_INNSYN_FILE_DELAY_MS ?? 2000);
     this.ua = opt.userAgent ?? DEFAULT_UA;
     this.jar = new CookieJar();
-    this.last = 0;
     this.sessionReady = false;
     this.clearanceUa = null;
   }
 
   async _throttle() {
-    const wait = this.last + this.delayMs - Date.now();
-    if (wait > 0) await sleep(wait);
-    this.last = Date.now();
+    await throttle(this.delayMs);
   }
 
   async _fetch(url, init = {}, { useClearanceUa = false } = {}) {
@@ -153,7 +165,7 @@ export class Portal {
     this.sessionReady = true;
   }
 
-  async _api(method, p, body) {
+  async _api(method, p, body, retried = false) {
     await this._session();
     const res = await this._fetch(`${API}/${p}`, {
       method,
@@ -161,7 +173,13 @@ export class Portal {
       body: method === 'POST' ? JSON.stringify(body ?? {}) : undefined,
     });
     const text = await res.text();
-    if (res.status !== 200) throw new InnsynError(`API ${method} ${p} returned HTTP ${res.status}`);
+    if ((res.status === 401 || res.status === 440) && !retried) {
+      // The portal session expired (long-running MCP server): open the search page again and retry once.
+      this.sessionReady = false;
+      this.jar.delete('ASP.NET_SessionId');
+      return this._api(method, p, body, true);
+    }
+    if (res.status !== 200) throw new InnsynError(`API ${method} ${p} returned HTTP ${res.status}`, { cause: { status: res.status } });
     try { return JSON.parse(text).content; } catch { throw new InnsynError(`API ${p} did not return JSON`); }
   }
 
@@ -312,7 +330,7 @@ export class Portal {
    * for plain HTTP requests with the same browser user agent.
    * @returns {Promise<null|{path,bytes,contentType}>} the file if the browser got it
    */
-  async _browserFetch(fileUrl, destPath) {
+  async _browserFetch(fileUrl, destPath, o = {}) {
     const pw = await loadPlaywright();
     let browser;
     try {
@@ -334,11 +352,16 @@ export class Portal {
       let saved = null;
       page.on('download', async (d) => {
         const tmp = `${destPath}.browser`;
-        fs.mkdirSync(path.dirname(destPath), { recursive: true });
-        await d.saveAs(tmp);
-        const buf = fs.readFileSync(tmp);
-        fs.rmSync(tmp, { force: true });
-        try { saved = this._store(buf, destPath, null, 'browser'); } catch (e) { saved = { error: e }; }
+        try {
+          fs.mkdirSync(path.dirname(destPath), { recursive: true });
+          await d.saveAs(tmp);
+          const buf = fs.readFileSync(tmp);
+          saved = this._store(buf, destPath, null, 'browser', o);
+        } catch (e) {
+          saved = { error: e instanceof InnsynError ? e : new InnsynError(`Browser download failed: ${String(e.message).split('\n')[0]}`) };
+        } finally {
+          fs.rmSync(tmp, { force: true });
+        }
       });
       if (process.env.ACOS_INNSYN_DEBUG) { page.on('response', (r) => process.stderr.write(`[browser] ${r.status()} ${r.url().slice(0, 90)}\n`)); }
       await page.goto(fileUrl).catch(() => { /* navigation turns into a download */ });
@@ -368,55 +391,74 @@ export class Portal {
   }
 
   /** Check a downloaded buffer and write it atomically (via .part). */
-  _store(buf, destPath, contentType, via) {
+  _store(buf, destPath, contentType, via, { declaredPdf = true } = {}) {
     if (!buf.length) throw new InnsynError(`Empty file received for ${path.basename(destPath)}`);
-    const isPdf = buf.subarray(0, 5).toString('latin1') === '%PDF-';
-    if (/\.pdf$/i.test(destPath) && !isPdf) throw new InnsynError(`Expected a PDF for ${path.basename(destPath)} but got something else (${contentType || 'unknown type'}); not saved.`);
+    const head = buf.subarray(0, 64).toString('latin1');
+    const isPdf = head.startsWith('%PDF-');
+    if (/^\s*<(!doctype|html)/i.test(head)) throw new InnsynError(`Got a web page instead of ${path.basename(destPath)} (${contentType || 'unknown type'}); not saved.`);
+    if (/\.pdf$/i.test(destPath) && !isPdf) {
+      if (declaredPdf) throw new InnsynError(`Expected a PDF for ${path.basename(destPath)} but got something else (${contentType || 'unknown type'}); not saved.`);
+      destPath = destPath.replace(/\.pdf$/i, `.${extFor(head, contentType)}`);
+    }
     fs.mkdirSync(path.dirname(destPath), { recursive: true });
     fs.writeFileSync(`${destPath}.part`, buf);
     fs.renameSync(`${destPath}.part`, destPath);
     return { path: destPath, bytes: buf.length, contentType: isPdf ? 'application/pdf' : (contentType || 'application/octet-stream'), via };
   }
 
-  async _plainFetch(full, destPath) {
+  async _plainFetch(full, destPath, o = {}) {
     await sleep(Math.max(0, this.fileDelayMs - this.delayMs));
     const res = await this._fetch(full, {}, { useClearanceUa: true });
     const buf = Buffer.from(await res.arrayBuffer());
     const ct = res.headers.get('content-type') || '';
-    if (res.status === 200 && !ct.includes('text/html')) return this._store(buf, destPath, ct, 'http');
+    if (res.status === 200 && !ct.includes('text/html')) return this._store(buf, destPath, ct, 'http', o);
     if (res.status !== 403) throw new InnsynError(`File download returned HTTP ${res.status}`);
     return null;
   }
 
   /** Download a file (url from getDocument) to destPath. Returns {path, bytes, contentType}. */
-  async downloadFile(url, destPath) {
+  async downloadFile(url, destPath, { declaredPdf = true } = {}) {
+    const o = { declaredPdf };
     const full = url.startsWith('http') ? url : `${BASE}${url}`;
     await this._session();
     if (!this.jar.has('afd_azwaf_jsclearance')) this._loadCachedClearance();
-    let r = await this._plainFetch(full, destPath);
+    let r = await this._plainFetch(full, destPath, o);
     if (r) return r;
     try { fs.rmSync(path.join(cacheDir(), 'clearance.json')); } catch { /* none */ }
     // The challenge occasionally fails once and passes on the next try; give it one more chance.
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        r = await this._browserFetch(full, destPath);
+        r = await this._browserFetch(full, destPath, o);
       } catch (e) {
         if (attempt === 0 && /firewall \(Azure WAF\) is refusing/.test(e.message)) { await sleep(5000); continue; }
         throw e;
       }
       if (r) return r;
-      r = await this._plainFetch(full, destPath);
+      r = await this._plainFetch(full, destPath, o);
       if (r) return r;
     }
     throw new InnsynError("The portal's firewall (Azure WAF) is refusing file downloads from this network right now, probably because of recent request volume. Wait 10-30 minutes and try again; already downloaded files are skipped. Search and metadata still work.");
   }
 }
 
+function extFor(head, contentType) {
+  if (head.startsWith('PK')) return /wordprocessing/.test(contentType || '') ? 'docx' : /spreadsheet/.test(contentType || '') ? 'xlsx' : 'zip';
+  if (head.startsWith('\xFF\xD8')) return 'jpg';
+  if (head.startsWith('\x89PNG')) return 'png';
+  if (head.startsWith('II*') || head.startsWith('MM\0*')) return 'tif';
+  return 'bin';
+}
+
+/** True when the portal's file title states the format, e.g. "Plan (pdf, 1,3MB)". */
+export function declaresFormat(file) {
+  return /\((\w+), [\d,.]+\s*[KMG]?B\)$/i.test(file?.title || '');
+}
+
 /** Safe file name: "YYYY-MM-DD_<title> (<documentId>).<ext>". */
 export function fileName(doc, file, n = 1) {
   const iso = isoDate(doc.date) || '';
-  const ext = (/\((\w+), [\d,.]+\s*[KMG]?B\)$/i.exec(file.title)?.[1] || 'pdf').toLowerCase();
-  let raw = file.title.replace(/\s*\(\w+, [\d,.]+\s*[KMG]?B\)$/i, '');
+  const ext = (/\((\w+), [\d,.]+\s*[KMG]?B\)$/i.exec(file.title || '')?.[1] || 'pdf').toLowerCase();
+  let raw = (file.title || 'dokument').replace(/\s*\(\w+, [\d,.]+\s*[KMG]?B\)$/i, '');
   // Some portals send the file title as the document title with its " - " separators squashed out.
   const squash = (x) => String(x || '').replace(/[\s-]+/g, '').toLowerCase();
   if (doc.title && squash(raw) === squash(doc.title)) raw = doc.title;

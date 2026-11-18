@@ -62,7 +62,8 @@ test('downloads are validated and written atomically', () => {
   const p = new Portal({ slug: 'x', searchPath: 'sok', portalId: 1, menypunktId: 1 });
   try {
     assert.throws(() => p._store(Buffer.alloc(0), path.join(dir, 'a.pdf'), 'application/pdf', 'http'), /Empty file/);
-    assert.throws(() => p._store(Buffer.from('<html>'), path.join(dir, 'b.pdf'), 'application/pdf', 'http'), /Expected a PDF/);
+    assert.throws(() => p._store(Buffer.from('<!DOCTYPE html><html>'), path.join(dir, 'b.pdf'), 'text/plain', 'http'), /Got a web page/);
+    assert.throws(() => p._store(Buffer.from('GIF89a...'), path.join(dir, 'b.pdf'), 'image/gif', 'http'), /Expected a PDF/);
     const r = p._store(Buffer.from('%PDF-1.7 x'), path.join(dir, 'c.pdf'), null, 'browser');
     assert.equal(r.contentType, 'application/pdf');
     assert.equal(r.via, 'browser');
@@ -82,4 +83,26 @@ test('malformed ids are rejected before any request', async () => {
   const p = new Portal({ slug: 'x', searchPath: 'sok', portalId: 1, menypunktId: 1 });
   await assert.rejects(() => p.getDocument('a-123'), /not a document id/);
   await assert.rejects(() => p.getCase('d-123'), /not a case id/);
+});
+
+test('a file whose title does not declare a format is saved under its real type', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'acos-ext-'));
+  const p = new Portal({ slug: 'x', searchPath: 'sok', portalId: 1, menypunktId: 1 });
+  try {
+    const r = p._store(Buffer.from([0xff, 0xd8, 0xff, 0xe0, 1, 2]), path.join(dir, 'foto.pdf'), 'image/jpeg', 'http', { declaredPdf: false });
+    assert.equal(path.basename(r.path), 'foto.jpg');
+    assert.deepEqual(fs.readdirSync(dir), ['foto.jpg']);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+  assert.equal(fileName({ date: '2026-01-02' }, {}), '2026-01-02_dokument.pdf');
+});
+
+test('the throttle is shared across portals and serialises parallel calls', async () => {
+  const a = new Portal({ slug: 'a', searchPath: 'sok', portalId: 1, menypunktId: 1 }, { delayMs: 120 });
+  const b = new Portal({ slug: 'b', searchPath: 'sok', portalId: 2, menypunktId: 2 }, { delayMs: 120 });
+  await a._throttle();
+  const t0 = Date.now();
+  await Promise.all([a._throttle(), b._throttle(), a._throttle()]);
+  assert.ok(Date.now() - t0 >= 330, `three queued calls took only ${Date.now() - t0} ms`);
 });

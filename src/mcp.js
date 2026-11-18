@@ -6,7 +6,7 @@ import path from 'node:path';
 import os from 'node:os';
 import * as ops from './ops.js';
 
-const VERSION = '0.2.4';
+const VERSION = '0.2.5';
 const PROTOCOL = '2025-06-18';
 
 const kommune = { type: 'string', description: 'Kommune: portal slug (baerum), name (Bærum) or kommunenummer (3201).' };
@@ -61,13 +61,13 @@ const TOOLS = [
   },
   {
     name: 'download',
-    description: 'Download all files of a document (d-...) or of every document in a case (a-...) into a folder, named "YYYY-MM-DD_<title> (<DokumentID>).pdf". Already downloaded files are skipped. Needs Playwright installed for the portal\'s browser check. Returns a manifest including order-only documents.',
+    description: 'Download all files of a document (d-...) or of every document in a case (a-...) into a folder, named "YYYY-MM-DD_<title> (<DokumentID>).pdf". Already downloaded files are skipped. Needs Playwright installed for the portal\'s browser check. Returns a manifest including order-only documents. Fetches at most max_files files per call (default 60). If the firewall or an error stops the run, the result is still returned with stopped.reason, and summary.complete is false; run the same call again later to continue.',
     inputSchema: {
       type: 'object',
-      properties: { kommune, id: { type: 'string' }, out_dir: { type: 'string', description: 'Target folder (absolute, or relative to the server\'s working directory).' } },
+      properties: { kommune, id: { type: 'string' }, out_dir: { type: 'string', description: 'Target folder (absolute, or relative to the server\'s working directory).' }, max_files: { type: 'integer', description: 'Stop after fetching this many files (default 60). Run again to continue.' } },
       required: ['kommune', 'id', 'out_dir'],
     },
-    run: (a) => ops.download(a.kommune, a.id, path.resolve(a.out_dir.replace(/^~(?=$|\/)/, os.homedir()))),
+    run: (a) => ops.download(a.kommune, a.id, path.resolve(a.out_dir.replace(/^~(?=$|\/)/, os.homedir())), { maxFiles: a.max_files ?? 60 }),
   },
 ];
 
@@ -102,6 +102,9 @@ async function handle(msg) {
       return fail(-32601, `Method not found: ${method}`);
   }
 }
+
+// Never let a stray async error kill the server; report it on stderr instead.
+process.on('unhandledRejection', (e) => process.stderr.write(`[acos-innsyn] unhandled: ${e?.message || e}\n`));
 
 const rl = readline.createInterface({ input: process.stdin });
 rl.on('line', (line) => {

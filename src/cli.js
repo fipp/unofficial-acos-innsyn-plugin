@@ -16,7 +16,7 @@ Usage:
         --cases (cases only)  --max N (per source, default 50)
   acos-innsyn case KOMMUNE CASE_ID [--files]         case with its document list (--files: add file count / orderOnly per document)
   acos-innsyn doc KOMMUNE DOC_ID                     document with its files
-  acos-innsyn download KOMMUNE ID --out DIR          download files of a document (d-...) or a whole case (a-...)
+  acos-innsyn download KOMMUNE ID --out DIR [--max-files N]   files of a document (d-...) or a whole case (a-...); default max 60 files per run
   acos-innsyn discover SLUG                          probe a portal slug
 
 KOMMUNE is a slug (baerum), name (Bærum) or kommunenummer (3201).
@@ -29,7 +29,7 @@ async function main() {
     options: {
       gnr: { type: 'string' }, title: { type: 'string' }, text: { type: 'string' }, id: { type: 'string' },
       party: { type: 'string' }, source: { type: 'string', multiple: true }, cases: { type: 'boolean' },
-      max: { type: 'string' }, out: { type: 'string' }, files: { type: 'boolean' }, 'with-source': { type: 'string' }, help: { type: 'boolean', short: 'h' },
+      max: { type: 'string' }, out: { type: 'string' }, files: { type: 'boolean' }, 'max-files': { type: 'string' }, 'with-source': { type: 'string' }, help: { type: 'boolean', short: 'h' },
     },
   });
   const [cmd, a, b] = pos;
@@ -46,7 +46,7 @@ async function main() {
     case 'doc': return print(await ops.getDocument(a, b));
     case 'download':
       if (!v.out) throw new Error('--out DIR is required');
-      return print(await ops.download(a, b, v.out));
+      return print(await ops.download(a, b, v.out, { maxFiles: v['max-files'] ? Number(v['max-files']) : 60 }));
     case 'discover': return print(await discover(a));
     default: process.stdout.write(HELP); if (cmd && !v.help) process.exitCode = 2;
   }
