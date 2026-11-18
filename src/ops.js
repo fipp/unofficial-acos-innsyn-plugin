@@ -128,9 +128,10 @@ export async function search(kommune, q) {
       const r = await p.searchAll({ ...q, datasource: ds.id }, max);
       out.push({ source: ds.name, total: r.total, items: r.items });
     }
-    if (q.gnrBnr && out.every((x) => !x.total)) {
+    // The hint rides on the first entry, so every entry keeps the {source, total, items} shape.
+    if (q.gnrBnr && out.length && out.every((x) => !x.total)) {
       const g = String(q.gnrBnr).replace(/\s+/g, '');
-      out.push({ hint: `gnr_bnr ${g} found nothing in any source. Some portals do not index gnr/bnr; try title "Gbnr ${g}", title "${g}" and the street address before concluding there are no cases.` });
+      out[0].hint = `gnr_bnr ${g} found nothing in any source. Some portals do not index every case by gnr/bnr. Search the street name in title (without the house number if the full address finds nothing) and owners' names in party before concluding there are no cases.`;
     }
     return out;
   });
@@ -189,17 +190,26 @@ export async function getDocument(kommune, docId) {
  * Download every file of a document, or of every document in a case.
  * Returns a manifest; order-only documents are listed but not fetched.
  */
+const inflight = new Map(); // destination path -> download promise
+
+/** Fail early if out_dir cannot become a folder; create nothing (the first saved file creates it). */
+export function checkOutDir(outDir) {
+  if (typeof outDir !== 'string' || !outDir.trim()) throw new InnsynError('out_dir is required: the folder to save files in.');
+  for (let d = path.resolve(outDir); ; d = path.dirname(d)) {
+    let st;
+    try { st = fs.statSync(d); } catch (e) {
+      if (e.code === 'ENOENT' && path.dirname(d) !== d) continue;
+      throw new InnsynError(`Cannot use out_dir "${outDir}": ${e.code === 'ENOTDIR' ? 'a file (not a folder) is in the way' : e.message}.`);
+    }
+    if (st.isDirectory()) return;
+    throw new InnsynError(d === path.resolve(outDir) ? `out_dir "${outDir}" is a file, not a folder.` : `Cannot use out_dir "${outDir}": "${d}" is a file, not a folder.`);
+  }
+}
+
 export async function download(kommune, id, outDir, { skipExisting = true, maxFiles = 60 } = {}) {
   id = checkId(id);
   maxFiles = intOpt('max_files', maxFiles, 60, 1, 500);
-  if (typeof outDir !== 'string' || !outDir.trim()) throw new InnsynError('out_dir is required: the folder to save files in.');
-  // Check the target folder before spending any requests on it.
-  try {
-    fs.mkdirSync(outDir, { recursive: true });
-  } catch (e) {
-    throw new InnsynError(`Cannot use out_dir "${outDir}": ${e.code === 'EEXIST' || e.code === 'ENOTDIR' ? 'a file (not a folder) is in the way' : e.message}.`);
-  }
-  if (!fs.statSync(outDir).isDirectory()) throw new InnsynError(`out_dir "${outDir}" is a file, not a folder.`);
+  checkOutDir(outDir);
   const p = await portal(kommune);
   let docIds;
   let caseInfo;
@@ -219,12 +229,15 @@ export async function download(kommune, id, outDir, { skipExisting = true, maxFi
     try {
       doc = await p.getDocument(did);
     } catch (e) {
+      // A single document that does not exist is an error, not a pause to resume.
+      if (!caseInfo && e instanceof InnsynError && e.cause?.notFound) throw e;
       manifest.stopped = { reason: why(e), atDocument: did, documentsLeft: left };
       break;
     }
     if (doc.orderOnly) { manifest.orderOnly.push({ id: doc.id, title: doc.title, documentId: doc.documentId, date: doc.date }); continue; }
     const used = new Map();
-    for (const f of doc.files) {
+    for (const [j, f] of doc.files.entries()) {
+      const filesLeft = doc.files.length - j;
       // Same title twice in one document (e.g. two "Situasjonsplan") -> "<title> 2 (<id>).pdf", "<title> 3 (<id>).pdf".
       const plain = fileName(doc, f);
       const n = (used.get(plain) || 0) + 1;
@@ -238,16 +251,30 @@ export async function download(kommune, id, outDir, { skipExisting = true, maxFi
         continue;
       }
       if (fetched >= maxFiles) {
-        manifest.stopped = { reason: `Reached max_files (${maxFiles}) with ${left} of ${docIds.length} document(s) still to check. Run again to continue; files on disk are skipped.`, atDocument: did, documentsLeft: left };
+        const more = left - 1;
+        manifest.stopped = {
+          reason: `Reached max_files (${maxFiles}) with ${filesLeft} file(s) left in this document${more ? ` and ${more} more document(s) to check` : ''}. Run again to continue; files on disk are skipped.`,
+          atDocument: did, filesLeft, documentsLeft: left,
+        };
         break outer;
       }
+      // Another call in this server is already fetching the same file: wait for it instead of fetching twice.
+      if (inflight.has(dest)) {
+        await inflight.get(dest).catch(() => {});
+        const got = existingFile(dest, declaresFormat(f));
+        if (got) { manifest.files.push({ path: got.path, skipped: true, bytes: got.bytes, ...base }); continue; }
+      }
+      const job = p.downloadFile(f.url, dest, { declaredPdf: declaresFormat(f) });
+      inflight.set(dest, job);
       try {
-        const r = await p.downloadFile(f.url, dest, { declaredPdf: declaresFormat(f) });
+        const r = await job;
         fetched += 1;
         manifest.files.push({ path: r.path, bytes: r.bytes, contentType: r.contentType, via: r.via, ...base });
       } catch (e) {
-        manifest.stopped = { reason: why(e), atDocument: did, atFile: f.title, documentsLeft: left };
+        manifest.stopped = { reason: why(e), atDocument: did, atFile: f.title, filesLeft, documentsLeft: left };
         break outer;
+      } finally {
+        if (inflight.get(dest) === job) inflight.delete(dest);
       }
     }
   }

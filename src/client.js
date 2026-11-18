@@ -42,7 +42,9 @@ export function checkId(id, kind) {
   if (!(kind ? s.startsWith(`${kind}-`) : /^[ad]-/.test(s))) {
     throw new InnsynError(`"${id}" is not a ${what} id; case ids start with "a-" and document ids with "d-" (expected ${prefix}).`);
   }
-  if (!/^[ad]-[A-Za-z0-9_=-]+$/.test(s)) throw new InnsynError(`"${id}" is not a valid ${what} id (only letters, digits, "-", "_" and "=" after the prefix).`);
+  // Real ids look like "a-8de09341__cd12__4975__9460__e28961550ab5-2015007742!PaFAgq". Rather than
+  // guess the full alphabet, refuse only what could change the API path or query.
+  if (/[\s/\\?#%]|\.\./.test(s) || s.length < 3) throw new InnsynError(`"${id}" is not a valid ${what} id (no spaces, "/", "\\", "?", "#", "%" or "..").`);
   return s;
 }
 
@@ -144,12 +146,12 @@ export class Portal {
     this.clearanceUa = null;
   }
 
-  async _throttle() {
-    await throttle(this.delayMs);
+  async _throttle(ms = this.delayMs) {
+    await throttle(ms);
   }
 
-  async _fetch(url, init = {}, { useClearanceUa = false } = {}) {
-    await this._throttle();
+  async _fetch(url, init = {}, { useClearanceUa = false, delayMs } = {}) {
+    await this._throttle(delayMs);
     const headers = {
       'user-agent': useClearanceUa && this.clearanceUa ? this.clearanceUa : this.ua,
       ...(init.headers || {}),
@@ -320,7 +322,7 @@ export class Portal {
   async getDocument(docId) {
     docId = checkId(docId, 'd');
     const c = await this._api('POST', `dokument/${encodeURIComponent(docId)}`, {});
-    if (!c?.identifier) throw new InnsynError(`No document "${docId}" found in ${this.cfg.slug}. Check the id, or find it with search (case_or_doc_id).`);
+    if (!c?.identifier) throw new InnsynError(`No document "${docId}" found in ${this.cfg.slug}. Check the id, or find it with search (case_or_doc_id).`, { cause: { notFound: true } });
     const files = [];
     for (const n of walk(c)) {
       if (n.type === 'FileList') {
@@ -437,8 +439,8 @@ export class Portal {
   }
 
   async _plainFetch(full, destPath, o = {}) {
-    await sleep(Math.max(0, this.fileDelayMs - this.delayMs));
-    const res = await this._fetch(full, {}, { useClearanceUa: true });
+    // Files keep fileDelayMs from the previous request of any kind.
+    const res = await this._fetch(full, {}, { useClearanceUa: true, delayMs: this.fileDelayMs });
     const buf = Buffer.from(await res.arrayBuffer());
     const ct = res.headers.get('content-type') || '';
     if (res.status === 200 && !ct.includes('text/html')) return this._store(buf, destPath, ct, 'http', o);

@@ -114,6 +114,13 @@ test('ids are trimmed, checked and cannot smuggle path segments', () => {
   assert.equal(checkId('  d-abc__12-2024  ', 'd'), 'd-abc__12-2024');
   assert.throws(() => checkId('abc'), /not a case or document id/);
   assert.throws(() => checkId('d-x/../../sak/a-1', 'd'), /not a valid document id/);
+  assert.throws(() => checkId('d-a..b', 'd'), /not a valid document id/);
+  assert.throws(() => checkId('a-1?x=1', 'a'), /not a valid case id/);
+  // Real ids, as the portals return them (round 5 found 0.2.6 rejected all of these).
+  for (const real of ['a-9e65a46b__696a__4a08__b3fe__6ae7cf63f461-1100043902!PaFAgq', 'a-8de09341__cd12__4975__9460__e28961550ab5-2015007742!PaFAgq']) {
+    assert.equal(checkId(` ${real} `, 'a'), real);
+    assert.equal(checkId(real.replace(/^a-/, 'd-'), 'd'), real.replace(/^a-/, 'd-'));
+  }
   assert.throws(() => checkId(42, 'a'), /not a case id/);
 });
 
@@ -163,4 +170,47 @@ test('a portal 500 on search is reported as a rejected search, and quotes are st
   p._api = async (m, route, body) => { sent = body; throw new InnsynError('API POST overview returned HTTP 500', { cause: { status: 500 } }); };
   await assert.rejects(() => p.search({ title: '"Storgata 1"' }), /rejected the search \(HTTP 500\)/);
   assert.equal(sent.keyValues.find((k) => k.key === 'titleSearch').value, 'Storgata 1');
+});
+
+test('out_dir is checked without creating anything', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'acos-od-'));
+  try {
+    assert.doesNotThrow(() => ops.checkOutDir(path.join(dir, 'new', 'deeper')));
+    assert.deepEqual(fs.readdirSync(dir), [], 'nothing may be created before the first file is saved');
+    fs.writeFileSync(path.join(dir, 'f.pdf'), 'x');
+    assert.throws(() => ops.checkOutDir(path.join(dir, 'f.pdf')), /is a file, not a folder/);
+    assert.throws(() => ops.checkOutDir(path.join(dir, 'f.pdf', 'sub')), /file, not a folder|in the way/);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('download stops count files, and a missing single document is an error', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'acos-dl-'));
+  const p = await ops.portal('baerum');
+  const orig = { getDocument: p.getDocument, downloadFile: p.downloadFile };
+  try {
+    p.getDocument = async (id) => ({ id, title: 'T', documentId: '2026/1', date: '2026-01-02', orderOnly: false,
+      files: [1, 2, 3].map((n) => ({ title: `F${n} (pdf, 1KB)`, url: `/f${n}`, role: 'main' })) });
+    p.downloadFile = async (url, dest) => { fs.mkdirSync(path.dirname(dest), { recursive: true }); fs.writeFileSync(dest, '%PDF-'); return { path: dest, bytes: 5 }; };
+    const out = path.join(dir, 'out');
+    const m = await ops.download('baerum', 'd-1!x', out, { maxFiles: 1 });
+    assert.equal(m.summary.fetched, 1);
+    assert.equal(m.stopped.filesLeft, 2);
+    assert.match(m.stopped.reason, /2 file\(s\) left in this document\. Run again/);
+    p.getDocument = async (id) => { throw new InnsynError(`No document "${id}" found`, { cause: { notFound: true } }); };
+    await assert.rejects(() => ops.download('baerum', 'd-2!x', path.join(dir, 'none')), /No document/);
+    assert.equal(fs.existsSync(path.join(dir, 'none')), false);
+  } finally {
+    Object.assign(p, orig);
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('file requests keep the file delay after any other request', async () => {
+  const p = new Portal({ slug: 'x', searchPath: 'sok', portalId: 1, menypunktId: 1 }, { delayMs: 20, fileDelayMs: 200 });
+  await p._throttle();
+  const t0 = Date.now();
+  await p._throttle(p.fileDelayMs);
+  assert.ok(Date.now() - t0 >= 190, `file throttle waited only ${Date.now() - t0} ms`);
 });

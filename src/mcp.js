@@ -6,7 +6,7 @@ import path from 'node:path';
 import os from 'node:os';
 import * as ops from './ops.js';
 
-const VERSION = '0.2.6';
+const VERSION = '0.2.7';
 const PROTOCOL = '2025-06-18';
 
 const kommune = { type: 'string', description: 'Kommune: portal slug (baerum), name (Bærum) or kommunenummer (3201).' };
@@ -32,7 +32,7 @@ const TOOLS = [
       properties: {
         kommune,
         gnr_bnr: { type: 'string', description: 'Gårds- og bruksnummer, e.g. "12/345". Some portals do not index it; if it finds nothing, the result carries a hint to search the title instead.' },
-        title: { type: 'string', description: 'Words in the case or document title, e.g. a street address. Double quotes are removed (the portal cannot handle them); % acts as a wildcard.' },
+        title: { type: 'string', description: 'Words in the case or document title, e.g. a street address. Double quotes are removed (the portal cannot handle them). % is a wildcard at the end of a word only ("Storg%"). If a full address finds nothing, try the street name alone.' },
         text: { type: 'string', description: 'Free-text search.' },
         case_or_doc_id: { type: 'string', description: 'Saks- eller dokumentID, e.g. "2024/12345".' },
         party: { type: 'string', description: 'Sender or recipient name.' },

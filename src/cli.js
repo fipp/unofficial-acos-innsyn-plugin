@@ -16,7 +16,8 @@ Usage:
         --cases (cases only)  --max N (per source, default 50)
   acos-innsyn case KOMMUNE CASE_ID [--files]         case with its document list (--files: add file count / orderOnly per document)
   acos-innsyn doc KOMMUNE DOC_ID                     document with its files
-  acos-innsyn download KOMMUNE ID --out DIR [--max-files N]   files of a document (d-...) or a whole case (a-...); default max 60 files per run
+  acos-innsyn download KOMMUNE ID --out DIR [--max-files N]   files of a document (d-...) or a whole case (a-...); default max 60 files per run.
+        Exit code 3 when the run stopped early (max-files, firewall); run it again to continue.
   acos-innsyn discover SLUG                          probe a portal slug
 
 KOMMUNE is a slug (baerum), name (Bærum) or kommunenummer (3201).
@@ -33,6 +34,11 @@ async function main() {
     },
   });
   const [cmd, a, b] = pos;
+  const int = (flag, x) => {
+    if (x === undefined) return undefined;
+    if (!/^-?\d+$/.test(x.trim())) throw new Error(`--${flag} must be a whole number (got "${x}")`);
+    return Number(x);
+  };
   const print = (x) => process.stdout.write(JSON.stringify(x, null, 2) + '\n');
   switch (cmd) {
     case 'portals': return print(ops.listPortals({ withSource: v['with-source'] }));
@@ -40,16 +46,29 @@ async function main() {
     case 'search':
       return print(await ops.search(a, {
         gnrBnr: v.gnr, title: v.title, text: v.text, caseOrDocId: v.id, senderRecipient: v.party,
-        source: v.source, onlyCases: v.cases, max: v.max ? Number(v.max) : undefined,
+        source: v.source, onlyCases: v.cases, max: int('max', v.max),
       }));
     case 'case': return print(await ops.getCase(a, b, { withFiles: v.files }));
     case 'doc': return print(await ops.getDocument(a, b));
     case 'download':
       if (!v.out) throw new Error('--out DIR is required');
-      return print(await ops.download(a, b, v.out, { maxFiles: v['max-files'] ? Number(v['max-files']) : 60 }));
+    {
+      const m = await ops.download(a, b, v.out, { maxFiles: int('max-files', v['max-files']) });
+      print(m);
+      if (!m.summary.complete) process.exitCode = 3; // stopped early (max-files, firewall, error); run again to continue
+      return undefined;
+    }
     case 'discover': return print(await discover(a));
-    default: process.stdout.write(HELP); if (cmd && !v.help) process.exitCode = 2;
+    default:
+      if (cmd && cmd !== 'help' && !v.help) { process.stderr.write(`Unknown command "${cmd}".\n\n${HELP}`); process.exitCode = 2; } else process.stdout.write(HELP);
   }
 }
 
-main().catch((e) => { process.stderr.write(`error: ${e.message}\n`); process.exitCode = 1; });
+// Messages from the shared code name MCP parameters; translate them to CLI flags.
+const CLI_NAMES = [[/\bgnr_bnr\b/g, '--gnr'], [/\bmax_files\b/g, '--max-files'], [/\bout_dir\b/g, '--out'], [/\bcase_or_doc_id\b/g, '--id'],
+  [/\blist_portals\b/g, '`acos-innsyn portals`'], [/(?<!-)\bmax must\b/g, '--max must']];
+main().catch((e) => {
+  const msg = CLI_NAMES.reduce((m, [re, to]) => m.replace(re, to), e.message);
+  process.stderr.write(`error: ${msg}\n`);
+  process.exitCode = 1;
+});
