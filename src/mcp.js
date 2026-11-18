@@ -6,7 +6,7 @@ import path from 'node:path';
 import os from 'node:os';
 import * as ops from './ops.js';
 
-const VERSION = '0.2.3';
+const VERSION = '0.2.4';
 const PROTOCOL = '2025-06-18';
 
 const kommune = { type: 'string', description: 'Kommune: portal slug (baerum), name (Bærum) or kommunenummer (3201).' };

@@ -71,3 +71,15 @@ test('downloads are validated and written atomically', () => {
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('duplicate suffix goes before the id; squashed titles fall back to the document title', () => {
+  const doc = { date: '2026-01-02', documentId: '2026/7', title: 'Storgata 1 - Bruksendring - Søknad' };
+  assert.equal(fileName(doc, { title: 'Situasjonsplan (pdf, 1KB)' }, 2), '2026-01-02_Situasjonsplan 2 (2026-7).pdf');
+  assert.equal(fileName(doc, { title: 'Storgata 1BruksendringSøknad (pdf, 5MB)' }), '2026-01-02_Storgata 1 - Bruksendring - Søknad (2026-7).pdf');
+});
+
+test('malformed ids are rejected before any request', async () => {
+  const p = new Portal({ slug: 'x', searchPath: 'sok', portalId: 1, menypunktId: 1 });
+  await assert.rejects(() => p.getDocument('a-123'), /not a document id/);
+  await assert.rejects(() => p.getCase('d-123'), /not a case id/);
+});

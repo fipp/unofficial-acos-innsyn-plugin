@@ -1,6 +1,6 @@
 {
   "name": "acos-innsyn",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Unofficial tools for Norwegian kommuner's public journals on ACOS Innsyn+ (innsynpluss.onacos.no): search byggesaker, postlister and politiske saker by gnr/bnr, address or name, read cases, and download published documents.",
   "author": { "name": "fipp" },
   "homepage": "https://github.com/fipp/unofficial-acos-innsyn-plugin",

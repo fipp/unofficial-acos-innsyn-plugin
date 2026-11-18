@@ -130,11 +130,11 @@ export async function download(kommune, id, outDir, { skipExisting = true } = {}
     if (doc.orderOnly) { manifest.orderOnly.push({ id: doc.id, title: doc.title, documentId: doc.documentId, date: doc.date }); continue; }
     const used = new Map();
     for (const f of doc.files) {
-      // Same title twice in one document (e.g. two "Situasjonsplan") -> "<name> 2.pdf", "<name> 3.pdf".
-      let name = fileName(doc, f);
-      const n = (used.get(name) || 0) + 1;
-      used.set(name, n);
-      if (n > 1) name = name.replace(/(\.[a-z0-9]+)$/i, ` ${n}$1`);
+      // Same title twice in one document (e.g. two "Situasjonsplan") -> "<title> 2 (<id>).pdf", "<title> 3 (<id>).pdf".
+      const plain = fileName(doc, f);
+      const n = (used.get(plain) || 0) + 1;
+      used.set(plain, n);
+      const name = fileName(doc, f, n);
       const dest = path.join(outDir, name);
       const base = { document: doc.title, documentId: doc.documentId, role: f.role, file: f.title };
       if (skipExisting && fs.existsSync(dest) && fs.statSync(dest).size > 0) {

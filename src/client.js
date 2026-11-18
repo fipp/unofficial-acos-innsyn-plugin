@@ -243,8 +243,10 @@ export class Portal {
 
   /** Case (arkivsak) with its published documents. */
   async getCase(caseId) {
+    if (!/^a-/.test(String(caseId))) throw new InnsynError(`"${caseId}" is not a case id; case ids start with "a-" (document ids start with "d-").`);
     const c = await this._api('GET', `sak/${caseId}`);
-    const body = c.body;
+    const body = c?.body;
+    if (!body?.identifier) throw new InnsynError(`No case "${caseId}" found in ${this.cfg.slug}. Check the id, or find it with search (case_or_doc_id).`);
     const docs = [];
     for (const n of walk(body)) {
       if (n.type === 'AsyncDocument' || (n.identifier?.startsWith('d-') && n !== body)) {
@@ -268,7 +270,9 @@ export class Portal {
 
   /** Document (journalpost) with its files. Files are empty when the document must be ordered. */
   async getDocument(docId) {
+    if (!/^d-/.test(String(docId))) throw new InnsynError(`"${docId}" is not a document id; document ids start with "d-" (case ids start with "a-").`);
     const c = await this._api('POST', `dokument/${docId}`, {});
+    if (!c?.identifier) throw new InnsynError(`No document "${docId}" found in ${this.cfg.slug}. Check the id, or find it with search (case_or_doc_id).`);
     const files = [];
     for (const n of walk(c)) {
       if (n.type === 'FileList') {
@@ -285,8 +289,8 @@ export class Portal {
       caseDocumentId: m.CASE_DOCUMENT_FRIENDLY_ID,
       date: isoDate(m.DATE),
       department: m.DEPARTMENT,
-      journalDate: isoDate(texts.Journaldato),
-      letterDate: isoDate(texts.Brevdato),
+      journalDate: isoDate(texts.Journaldato) ?? null,
+      letterDate: isoDate(texts.Brevdato) ?? null,
       files,
       orderOnly: files.length === 0,
     };
@@ -343,6 +347,11 @@ export class Portal {
         cookie = (await ctx.cookies()).find((c) => c.name === 'afd_azwaf_jsclearance');
         if (cookie && i > 2) break;
         await sleep(1000);
+      }
+      // The file can arrive before we looked for the cookie; keep it so later files go over plain HTTP.
+      for (let i = 0; i < 3 && !cookie; i++) {
+        cookie = (await ctx.cookies()).find((c) => c.name === 'afd_azwaf_jsclearance');
+        if (!cookie) await sleep(500);
       }
       if (cookie) {
         this.clearanceUa = await page.evaluate(() => navigator.userAgent).catch(() => null);
@@ -404,10 +413,14 @@ export class Portal {
 }
 
 /** Safe file name: "YYYY-MM-DD_<title> (<documentId>).<ext>". */
-export function fileName(doc, file) {
+export function fileName(doc, file, n = 1) {
   const iso = isoDate(doc.date) || '';
   const ext = (/\((\w+), [\d,.]+\s*[KMG]?B\)$/i.exec(file.title)?.[1] || 'pdf').toLowerCase();
-  const t = file.title.replace(/\s*\(\w+, [\d,.]+\s*[KMG]?B\)$/i, '').replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').trim().slice(0, 120);
+  let raw = file.title.replace(/\s*\(\w+, [\d,.]+\s*[KMG]?B\)$/i, '');
+  // Some portals send the file title as the document title with its " - " separators squashed out.
+  const squash = (x) => String(x || '').replace(/[\s-]+/g, '').toLowerCase();
+  if (doc.title && squash(raw) === squash(doc.title)) raw = doc.title;
+  const t = raw.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').trim().slice(0, 120);
   const id = (doc.documentId || '').replace(/\//g, '-');
-  return `${iso ? iso + '_' : ''}${t}${id ? ` (${id})` : ''}.${ext}`;
+  return `${iso ? iso + '_' : ''}${t}${n > 1 ? ` ${n}` : ''}${id ? ` (${id})` : ''}.${ext}`;
 }
