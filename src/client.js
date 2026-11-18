@@ -39,13 +39,24 @@ function cacheDir() {
 }
 
 /** Load a module that the user installed somewhere (cwd, env path, or next to us). */
-async function loadPlaywright() {
+export async function loadPlaywright() {
   const tries = [];
   if (process.env.ACOS_PLAYWRIGHT_MODULE) tries.push(process.env.ACOS_PLAYWRIGHT_MODULE);
   tries.push('playwright');
   let globalRoot = null;
   try { globalRoot = execSync('npm root -g', { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch { /* npm missing */ }
-  for (const base of [process.cwd(), path.dirname(new URL(import.meta.url).pathname), globalRoot].filter(Boolean)) {
+  // The node_modules that holds the `playwright` command found on PATH (e.g. an image-wide install).
+  const binRoots = [];
+  for (const dir of (process.env.PATH || '').split(path.delimiter)) {
+    try {
+      const real = fs.realpathSync(path.join(dir, 'playwright'));
+      const i = real.lastIndexOf(`${path.sep}node_modules${path.sep}`);
+      if (i >= 0) binRoots.push(real.slice(0, i + '/node_modules'.length));
+    } catch { /* not in this dir */ }
+  }
+  const nodePrefix = path.join(path.dirname(process.execPath), '..', 'lib', 'node_modules');
+  const bases = [process.cwd(), path.dirname(new URL(import.meta.url).pathname), globalRoot, ...binRoots, nodePrefix];
+  for (const base of [...new Set(bases.filter(Boolean))]) {
     try { tries.push(createRequire(path.join(base, 'noop.js')).resolve('playwright')); } catch { /* not there */ }
   }
   for (const t of tries) {
@@ -54,10 +65,13 @@ async function loadPlaywright() {
       return m.chromium ? m : m.default;
     } catch { /* try next */ }
   }
+  const bp = process.env.PLAYWRIGHT_BROWSERS_PATH;
   throw new InnsynError(
     'File downloads need Playwright to pass the portal\'s Azure WAF JavaScript challenge. ' +
-    'Install it globally (npm i -g playwright && npx playwright install chromium), or set ACOS_PLAYWRIGHT_MODULE ' +
-    'to the path of an installed playwright module, then restart the MCP server. Search and metadata work without it.');
+    (bp
+      ? `Browsers are preinstalled in PLAYWRIGHT_BROWSERS_PATH=${bp}: install the Playwright version that matches them (not the latest), e.g. npm i -g playwright@<that version>, `
+      : 'Install it globally (npm i -g playwright && npx playwright install chromium), ') +
+    'or set ACOS_PLAYWRIGHT_MODULE to the path of an installed playwright module, then restart the MCP server. Search and metadata work without it.');
 }
 
 /** Flatten the portal's nested {b:[...]} block tree. */

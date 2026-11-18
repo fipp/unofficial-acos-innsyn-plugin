@@ -1,6 +1,6 @@
 {
   "name": "unofficial-acos-innsyn",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Unofficial client, CLI and MCP server for Norwegian kommuner's ACOS Innsyn+ journals (innsynpluss.onacos.no).",
   "type": "module",
   "bin": {
