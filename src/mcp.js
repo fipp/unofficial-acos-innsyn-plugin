@@ -6,7 +6,7 @@ import path from 'node:path';
 import os from 'node:os';
 import * as ops from './ops.js';
 
-const VERSION = '0.2.5';
+const VERSION = '0.2.6';
 const PROTOCOL = '2025-06-18';
 
 const kommune = { type: 'string', description: 'Kommune: portal slug (baerum), name (Bærum) or kommunenummer (3201).' };
@@ -31,14 +31,14 @@ const TOOLS = [
       type: 'object',
       properties: {
         kommune,
-        gnr_bnr: { type: 'string', description: 'Gårds- og bruksnummer, e.g. "12/345".' },
-        title: { type: 'string', description: 'Words in the case or document title, e.g. a street address.' },
+        gnr_bnr: { type: 'string', description: 'Gårds- og bruksnummer, e.g. "12/345". Some portals do not index it; if it finds nothing, the result carries a hint to search the title instead.' },
+        title: { type: 'string', description: 'Words in the case or document title, e.g. a street address. Double quotes are removed (the portal cannot handle them); % acts as a wildcard.' },
         text: { type: 'string', description: 'Free-text search.' },
         case_or_doc_id: { type: 'string', description: 'Saks- eller dokumentID, e.g. "2024/12345".' },
         party: { type: 'string', description: 'Sender or recipient name.' },
         source: { type: 'array', items: { type: 'string' }, description: 'Data source name fragments or ids, e.g. ["bygg"].' },
         cases_only: { type: 'boolean' },
-        max: { type: 'integer', description: 'Max results per data source (default 50).' },
+        max: { type: 'integer', minimum: 0, maximum: 500, description: 'Max results per data source (default 50, at most 500). 0 returns only the totals.' },
       },
       required: ['kommune'],
     },
@@ -64,12 +64,42 @@ const TOOLS = [
     description: 'Download all files of a document (d-...) or of every document in a case (a-...) into a folder, named "YYYY-MM-DD_<title> (<DokumentID>).pdf". Already downloaded files are skipped. Needs Playwright installed for the portal\'s browser check. Returns a manifest including order-only documents. Fetches at most max_files files per call (default 60). If the firewall or an error stops the run, the result is still returned with stopped.reason, and summary.complete is false; run the same call again later to continue.',
     inputSchema: {
       type: 'object',
-      properties: { kommune, id: { type: 'string' }, out_dir: { type: 'string', description: 'Target folder (absolute, or relative to the server\'s working directory).' }, max_files: { type: 'integer', description: 'Stop after fetching this many files (default 60). Run again to continue.' } },
+      properties: { kommune, id: { type: 'string' }, out_dir: { type: 'string', description: 'Target folder (absolute, or relative to the server\'s working directory).' }, max_files: { type: 'integer', minimum: 1, maximum: 500, description: 'Stop after fetching this many files (default 60, at most 500). Run again to continue.' } },
       required: ['kommune', 'id', 'out_dir'],
     },
     run: (a) => ops.download(a.kommune, a.id, path.resolve(a.out_dir.replace(/^~(?=$|\/)/, os.homedir())), { maxFiles: a.max_files ?? 60 }),
   },
 ];
+
+/** Check arguments against a tool's inputSchema, so bad input gets a clear message instead of a JavaScript error. */
+export function checkArgs(schema, args) {
+  if (args === null || typeof args !== 'object' || Array.isArray(args)) throw new Error('Arguments must be an object.');
+  const props = schema.properties || {};
+  const out = {};
+  for (const [k, v] of Object.entries(args)) {
+    if (!(k in props)) throw new Error(`Unknown argument "${k}". Allowed: ${Object.keys(props).join(', ')}.`);
+    if (v === undefined || v === null) continue;
+    const s = props[k];
+    const bad = (want) => new Error(`"${k}" must be ${want} (got ${JSON.stringify(v)}).`);
+    if (s.type === 'string' && typeof v !== 'string') throw bad('a string');
+    if (s.type === 'boolean' && typeof v !== 'boolean') throw bad('true or false');
+    if (s.type === 'integer') {
+      if (!Number.isInteger(v)) throw bad('a whole number');
+      if ((s.minimum !== undefined && v < s.minimum) || (s.maximum !== undefined && v > s.maximum)) throw bad(`from ${s.minimum} to ${s.maximum}`);
+    }
+    if (s.type === 'array') {
+      const list = typeof v === 'string' ? [v] : v; // a single string is accepted for convenience
+      if (!Array.isArray(list) || list.some((x) => typeof x !== 'string')) throw bad('a list of strings');
+      out[k] = list;
+      continue;
+    }
+    out[k] = v;
+  }
+  for (const r of schema.required || []) {
+    if (out[r] === undefined || (typeof out[r] === 'string' && !out[r].trim())) throw new Error(`Missing required argument "${r}".`);
+  }
+  return out;
+}
 
 function send(msg) { process.stdout.write(JSON.stringify(msg) + '\n'); }
 
@@ -91,7 +121,7 @@ async function handle(msg) {
       const tool = TOOLS.find((t) => t.name === params?.name);
       if (!tool) return fail(-32602, `Unknown tool ${params?.name}`);
       try {
-        const out = await tool.run(params.arguments || {});
+        const out = await tool.run(checkArgs(tool.inputSchema, params.arguments || {}));
         return reply({ content: [{ type: 'text', text: JSON.stringify(out, null, 2) }] });
       } catch (e) {
         return reply({ content: [{ type: 'text', text: `Error: ${e.message}` }], isError: true });

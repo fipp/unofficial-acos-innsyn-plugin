@@ -20,7 +20,7 @@ export function slugify(name) {
 /** Look up a portal by slug, kommune name or kommunenummer. */
 export function findPortal(q) {
   const reg = loadRegistry();
-  const s = String(q).trim().toLowerCase();
+  const s = String(q).trim().toLowerCase().replace(/\s+kommune$/, '').replace(/^kommune\s+/, '');
   return reg.portals.find((p) => p.slug === s || p.kommunenummer === s || p.name?.toLowerCase() === s || slugify(p.name || '') === slugify(s));
 }
 

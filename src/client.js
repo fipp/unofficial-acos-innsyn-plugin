@@ -31,6 +31,21 @@ function throttle(ms) {
 
 export class InnsynError extends Error {}
 
+export const GNR_BNR = /^\d+(\s*\/\s*\d+){0,3}$/;
+const MAX_PAGES = 10; // searchAll never follows more than 10 pages of 100
+
+/** Trim and check a case (a-) or document (d-) id; throws InnsynError on anything else. */
+export function checkId(id, kind) {
+  const s = typeof id === 'string' ? id.trim() : '';
+  const what = kind === 'a' ? 'case' : kind === 'd' ? 'document' : 'case or document';
+  const prefix = kind ? `${kind}-` : 'a- or d-';
+  if (!(kind ? s.startsWith(`${kind}-`) : /^[ad]-/.test(s))) {
+    throw new InnsynError(`"${id}" is not a ${what} id; case ids start with "a-" and document ids with "d-" (expected ${prefix}).`);
+  }
+  if (!/^[ad]-[A-Za-z0-9_=-]+$/.test(s)) throw new InnsynError(`"${id}" is not a valid ${what} id (only letters, digits, "-", "_" and "=" after the prefix).`);
+  return s;
+}
+
 class CookieJar {
   constructor() { this.map = new Map(); }
   absorb(res) {
@@ -159,10 +174,14 @@ export class Portal {
 
   async _session() {
     if (this.sessionReady) return;
-    const res = await this._fetch(`${BASE}/${this.cfg.slug}/${this.cfg.searchPath}/`);
-    if (res.status !== 200) throw new InnsynError(`Could not open ${this.cfg.slug}/${this.cfg.searchPath} (HTTP ${res.status})`);
-    await res.arrayBuffer();
-    this.sessionReady = true;
+    // Parallel calls share one session request instead of each opening their own.
+    this._sessionP ??= (async () => {
+      const res = await this._fetch(`${BASE}/${this.cfg.slug}/${this.cfg.searchPath}/`);
+      if (res.status !== 200) throw new InnsynError(`Could not open ${this.cfg.slug}/${this.cfg.searchPath} (HTTP ${res.status})`);
+      await res.arrayBuffer();
+      this.sessionReady = true;
+    })().finally(() => { this._sessionP = null; });
+    return this._sessionP;
   }
 
   async _api(method, p, body, retried = false) {
@@ -221,15 +240,26 @@ export class Portal {
     if (![text, title, caseOrDocId, gnrBnr, senderRecipient].some((x) => x && String(x).trim())) {
       throw new InnsynError('Give at least one filter: text, title, case/document id, gnr/bnr or sender/recipient. Unfiltered searches would page through the whole journal.');
     }
+    if (gnrBnr && !GNR_BNR.test(String(gnrBnr).trim())) {
+      throw new InnsynError(`gnr_bnr "${gnrBnr}" is not a gårds-/bruksnummer. Use "gnr/bnr", e.g. "12/345" (optionally "/fnr/snr").`);
+    }
+    // The portal answers HTTP 500 to double quotes in a search term, so drop them.
+    const clean = (x) => String(x).replace(/["\u201c\u201d]/g, ' ').replace(/\s+/g, ' ').trim();
     const kv = datasource ? [{ key: 'Datasource', value: datasource }] : [];
-    if (text) kv.push({ key: 'searchTerm', value: text });
-    if (title) kv.push({ key: 'titleSearch', value: title });
-    if (caseOrDocId) kv.push({ key: 'caseDocIDSearch', value: caseOrDocId });
-    if (gnrBnr) kv.push({ key: 'farmPropertyNumberSearch', value: gnrBnr });
-    if (senderRecipient) kv.push({ key: 'senderRecipientSearch', value: senderRecipient });
+    if (text) kv.push({ key: 'searchTerm', value: clean(text) });
+    if (title) kv.push({ key: 'titleSearch', value: clean(title) });
+    if (caseOrDocId) kv.push({ key: 'caseDocIDSearch', value: clean(caseOrDocId) });
+    if (gnrBnr) kv.push({ key: 'farmPropertyNumberSearch', value: String(gnrBnr).replace(/\s+/g, '') });
+    if (senderRecipient) kv.push({ key: 'senderRecipientSearch', value: clean(senderRecipient) });
     if (onlyCases) kv.push({ key: 'FilterContent', value: 'CaseOnly' });
     kv.push({ key: 'page', value: String(page) }, { key: 'pageSize', value: String(pageSize) });
-    const c = await this._api('POST', 'overview', { type: 0, keyValues: kv });
+    let c;
+    try {
+      c = await this._api('POST', 'overview', { type: 0, keyValues: kv });
+    } catch (e) {
+      if (!(e?.cause?.status >= 500)) throw e;
+      throw new InnsynError(`The portal rejected the search (HTTP ${e.cause.status}). Some characters in search terms are not supported; simplify the terms and try again.`, { cause: e.cause });
+    }
     const s = c.searchItems;
     return {
       total: s.totalItemCount,
@@ -254,15 +284,15 @@ export class Portal {
     for (;;) {
       const r = await this.search({ ...q, page, pageSize: 100 });
       out.push(...r.items);
-      if (out.length >= maxItems || page >= r.pageCount || r.items.length === 0) return { total: r.total, items: out.slice(0, maxItems) };
+      if (out.length >= maxItems || page >= r.pageCount || page >= MAX_PAGES || r.items.length === 0) return { total: r.total, items: out.slice(0, maxItems) };
       page += 1;
     }
   }
 
   /** Case (arkivsak) with its published documents. */
   async getCase(caseId) {
-    if (!/^a-/.test(String(caseId))) throw new InnsynError(`"${caseId}" is not a case id; case ids start with "a-" (document ids start with "d-").`);
-    const c = await this._api('GET', `sak/${caseId}`);
+    caseId = checkId(caseId, 'a');
+    const c = await this._api('GET', `sak/${encodeURIComponent(caseId)}`);
     const body = c?.body;
     if (!body?.identifier) throw new InnsynError(`No case "${caseId}" found in ${this.cfg.slug}. Check the id, or find it with search (case_or_doc_id).`);
     const docs = [];
@@ -288,8 +318,8 @@ export class Portal {
 
   /** Document (journalpost) with its files. Files are empty when the document must be ordered. */
   async getDocument(docId) {
-    if (!/^d-/.test(String(docId))) throw new InnsynError(`"${docId}" is not a document id; document ids start with "d-" (case ids start with "a-").`);
-    const c = await this._api('POST', `dokument/${docId}`, {});
+    docId = checkId(docId, 'd');
+    const c = await this._api('POST', `dokument/${encodeURIComponent(docId)}`, {});
     if (!c?.identifier) throw new InnsynError(`No document "${docId}" found in ${this.cfg.slug}. Check the id, or find it with search (case_or_doc_id).`);
     const files = [];
     for (const n of walk(c)) {

@@ -106,3 +106,61 @@ test('the throttle is shared across portals and serialises parallel calls', asyn
   await Promise.all([a._throttle(), b._throttle(), a._throttle()]);
   assert.ok(Date.now() - t0 >= 330, `three queued calls took only ${Date.now() - t0} ms`);
 });
+
+import { checkId } from '../src/client.js';
+import * as ops from '../src/ops.js';
+
+test('ids are trimmed, checked and cannot smuggle path segments', () => {
+  assert.equal(checkId('  d-abc__12-2024  ', 'd'), 'd-abc__12-2024');
+  assert.throws(() => checkId('abc'), /not a case or document id/);
+  assert.throws(() => checkId('d-x/../../sak/a-1', 'd'), /not a valid document id/);
+  assert.throws(() => checkId(42, 'a'), /not a case id/);
+});
+
+test('a resumed download finds a file that was saved under its real type', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'acos-resume-'));
+  try {
+    const dest = path.join(dir, '2026-01-02_Foto (2026-7).pdf');
+    assert.equal(ops.existingFile(dest, false), null);
+    fs.writeFileSync(path.join(dir, '2026-01-02_Foto (2026-7).jpg.part'), 'x');
+    fs.writeFileSync(path.join(dir, '2026-01-02_Foto 2 (2026-7).jpg'), 'x');
+    assert.equal(ops.existingFile(dest, false), null, 'must not match .part or a numbered sibling');
+    fs.writeFileSync(path.join(dir, '2026-01-02_Foto (2026-7).jpg'), 'jpeg');
+    assert.equal(path.basename(ops.existingFile(dest, false).path), '2026-01-02_Foto (2026-7).jpg');
+    assert.equal(ops.existingFile(dest, true), null, 'a declared PDF only counts under its own name');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('bad search and download options are rejected before any request', async () => {
+  const fail = (re) => (e) => e instanceof InnsynError && re.test(e.message);
+  await assert.rejects(() => ops.search('baerum', { title: 'x', max: -1 }), fail(/max must be a whole number from 0 to 500/));
+  await assert.rejects(() => ops.search('baerum', { title: 'x', max: Number('abc') }), fail(/max must be/));
+  await assert.rejects(() => ops.search('baerum', { title: 'x', max: 100000 }), fail(/max must be/));
+  await assert.rejects(() => ops.search('baerum', { gnrBnr: 'abc', source: ['fra 2015'] }), fail(/not a gårds-\/bruksnummer/));
+  await assert.rejects(() => ops.search('..', { title: 'x' }), fail(/not a kommune/));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'acos-out-'));
+  try {
+    const file = path.join(dir, 'a.pdf');
+    fs.writeFileSync(file, '%PDF-');
+    await assert.rejects(() => ops.download('baerum', 'd-1', file), fail(/file .*in the way|is a file/));
+    await assert.rejects(() => ops.download('baerum', 'abc', dir), fail(/not a case or document id/));
+    await assert.rejects(() => ops.download('baerum', 'd-1', dir, { maxFiles: -1 }), fail(/max_files must be/));
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('"<name> kommune" resolves, and a broken with_source regex is matched literally', () => {
+  assert.equal(findPortal('Bærum kommune')?.slug, 'baerum');
+  assert.doesNotThrow(() => ops.listPortals({ withSource: '(' }));
+});
+
+test('a portal 500 on search is reported as a rejected search, and quotes are stripped', async () => {
+  const p = new Portal({ slug: 'x', searchPath: 'sok', portalId: 1, menypunktId: 1 });
+  let sent;
+  p._api = async (m, route, body) => { sent = body; throw new InnsynError('API POST overview returned HTTP 500', { cause: { status: 500 } }); };
+  await assert.rejects(() => p.search({ title: '"Storgata 1"' }), /rejected the search \(HTTP 500\)/);
+  assert.equal(sent.keyValues.find((k) => k.key === 'titleSearch').value, 'Storgata 1');
+});
