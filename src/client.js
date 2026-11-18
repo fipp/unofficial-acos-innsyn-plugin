@@ -55,9 +55,9 @@ async function loadPlaywright() {
     } catch { /* try next */ }
   }
   throw new InnsynError(
-    'File downloads need Playwright to pass the portal\'s Azure WAF JavaScript challenge once per session. ' +
-    'Install it (npm i playwright && npx playwright install chromium) in the current directory, ' +
-    'or set ACOS_PLAYWRIGHT_MODULE to its path. Search and metadata work without it.');
+    'File downloads need Playwright to pass the portal\'s Azure WAF JavaScript challenge. ' +
+    'Install it globally (npm i -g playwright && npx playwright install chromium), or set ACOS_PLAYWRIGHT_MODULE ' +
+    'to the path of an installed playwright module, then restart the MCP server. Search and metadata work without it.');
 }
 
 /** Flatten the portal's nested {b:[...]} block tree. */
@@ -164,7 +164,7 @@ export class Portal {
     const f = init.filters.find((x) => x.identifier === 'Datasource');
     if (!f?.fields?.length) {
       if (!init.filters.length && !init.total) return [];
-      return [{ id: null, name: 'Journal', ...(withCaseTypes ? { caseTypes: init.caseTypes } : {}) }];
+      return [{ id: null, name: 'Journal', note: 'Single journal; this portal has no data-source menu, so searches need no source.', ...(withCaseTypes ? { caseTypes: init.caseTypes } : {}) }];
     }
     const out = [];
     for (const x of f.fields) {
@@ -180,6 +180,9 @@ export class Portal {
    * @returns {{total:number, page:number, pageCount:number, items:object[]}}
    */
   async search({ datasource, text, title, caseOrDocId, gnrBnr, senderRecipient, onlyCases, page = 1, pageSize = 50 } = {}) {
+    if (![text, title, caseOrDocId, gnrBnr, senderRecipient].some((x) => x && String(x).trim())) {
+      throw new InnsynError('Give at least one filter: text, title, case/document id, gnr/bnr or sender/recipient. Unfiltered searches would page through the whole journal.');
+    }
     const kv = datasource ? [{ key: 'Datasource', value: datasource }] : [];
     if (text) kv.push({ key: 'searchTerm', value: text });
     if (title) kv.push({ key: 'titleSearch', value: title });
@@ -230,7 +233,17 @@ export class Portal {
       }
     }
     const m = meta(body);
-    return { id: body.identifier, title: body.title?.trim(), caseNumber: m.FRIENDLY_ID, ...(body.props || {}), documents: docs };
+    const pr = body.props || {};
+    return {
+      id: body.identifier,
+      title: body.title?.trim(),
+      caseNumber: m.FRIENDLY_ID,
+      date: pr.dato,
+      caseType: pr.sakstype,
+      handler: pr.saksbehandler,
+      status: pr.status,
+      documents: docs,
+    };
   }
 
   /** Document (journalpost) with its files. Files are empty when the document must be ordered. */
@@ -277,7 +290,20 @@ export class Portal {
    */
   async _browserFetch(fileUrl, destPath) {
     const pw = await loadPlaywright();
-    const browser = await pw.chromium.launch();
+    let browser;
+    try {
+      browser = await pw.chromium.launch();
+    } catch (e) {
+      const first = String(e.message).split('\n')[0];
+      const missing = /Executable doesn't exist|install/i.test(e.message);
+      const bp = process.env.PLAYWRIGHT_BROWSERS_PATH;
+      throw new InnsynError(missing
+        ? 'Playwright was found, but the Chromium build it expects is not installed. Each Playwright version needs one specific Chromium revision. ' +
+          'Run `npx playwright install chromium` with the same Playwright version' +
+          (bp ? ` (PLAYWRIGHT_BROWSERS_PATH=${bp} must be writable), or install the Playwright version that matches the browsers already in ${bp}` : '') +
+          `, then restart the MCP server. Playwright said: ${first}`
+        : `Could not start Chromium for the download check: ${first}`);
+    }
     try {
       const ctx = await browser.newContext({ acceptDownloads: true });
       const page = await ctx.newPage();

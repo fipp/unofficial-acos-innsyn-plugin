@@ -13,8 +13,8 @@ Usage:
   acos-innsyn search KOMMUNE [filters]               search; filters:
         --gnr 12/345  --title TEXT  --text TEXT  --id 2024/12345  --party NAME
         --source NAME (repeatable, name fragment or id; default: all)
-        --cases (cases only)  --max N (per source, default 200)
-  acos-innsyn case KOMMUNE CASE_ID                   case with its document list
+        --cases (cases only)  --max N (per source, default 50)
+  acos-innsyn case KOMMUNE CASE_ID [--files]         case with its document list (--files: add file count / orderOnly per document)
   acos-innsyn doc KOMMUNE DOC_ID                     document with its files
   acos-innsyn download KOMMUNE ID --out DIR          download files of a document (d-...) or a whole case (a-...)
   acos-innsyn discover SLUG                          probe a portal slug
@@ -29,7 +29,7 @@ async function main() {
     options: {
       gnr: { type: 'string' }, title: { type: 'string' }, text: { type: 'string' }, id: { type: 'string' },
       party: { type: 'string' }, source: { type: 'string', multiple: true }, cases: { type: 'boolean' },
-      max: { type: 'string' }, out: { type: 'string' }, 'with-source': { type: 'string' }, help: { type: 'boolean', short: 'h' },
+      max: { type: 'string' }, out: { type: 'string' }, files: { type: 'boolean' }, 'with-source': { type: 'string' }, help: { type: 'boolean', short: 'h' },
     },
   });
   const [cmd, a, b] = pos;
@@ -42,7 +42,7 @@ async function main() {
         gnrBnr: v.gnr, title: v.title, text: v.text, caseOrDocId: v.id, senderRecipient: v.party,
         source: v.source, onlyCases: v.cases, max: v.max ? Number(v.max) : undefined,
       }));
-    case 'case': return print(await ops.getCase(a, b));
+    case 'case': return print(await ops.getCase(a, b, { withFiles: v.files }));
     case 'doc': return print(await ops.getDocument(a, b));
     case 'download':
       if (!v.out) throw new Error('--out DIR is required');

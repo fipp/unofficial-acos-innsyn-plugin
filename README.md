@@ -51,7 +51,9 @@ git clone https://github.com/fipp/unofficial-acos-innsyn-plugin.git ~/src/unoffi
 npm i -g playwright && npx playwright install chromium
 ```
 
-The tool finds a global install, one in the current directory, or the module path in `ACOS_PLAYWRIGHT_MODULE`.
+The tool finds a global install, one next to the plugin or in the server's working directory, or the module path in `ACOS_PLAYWRIGHT_MODULE`. Restart the MCP server after installing.
+
+Each Playwright version needs one specific Chromium build. In an environment that ships browsers in a fixed `PLAYWRIGHT_BROWSERS_PATH` (many Docker images), install the Playwright version that matches those browsers rather than the latest; the tool explains a mismatch when it happens.
 
 ## CLI
 
@@ -73,8 +75,8 @@ Output is JSON. `KOMMUNE` can be a slug (`baerum`), a name (`Bærum`) or a kommu
 |---|---|
 | `list_portals` | Known kommuner and their data sources, optionally filtered (`with_source: "bygg"`) |
 | `list_sources` | One portal's data sources |
-| `search` | `gnr_bnr`, `title`, `text`, `case_or_doc_id`, `party`, `source`, `cases_only`, `max` |
-| `get_case` | Case with status, type, handler and documents |
+| `search` | At least one of `gnr_bnr`, `title`, `text`, `case_or_doc_id`, `party`; plus `source`, `cases_only`, `max` (default 50 per source) |
+| `get_case` | Case with date, type, handler, status and documents; `with_files` adds file count and `orderOnly` per document |
 | `get_document` | Document with dates and files (`orderOnly` if none) |
 | `download` | Files of a document or a whole case into `out_dir` |
 

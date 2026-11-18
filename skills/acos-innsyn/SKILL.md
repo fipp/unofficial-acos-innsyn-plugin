@@ -13,8 +13,17 @@ Without MCP, run the same operations with the CLI: `node <plugin>/src/cli.js hel
 1. **Find the portal.** `list_portals` (use `with_source: "bygg"` for kommuner that publish byggesaker). A kommune is a slug (`baerum`), a name (`Bærum`) or a kommunenummer (`3201`). If a kommune is missing it may not use Innsyn+; say so rather than guessing.
 2. **Check the data sources** with `list_sources`. Many portals split old and new archives (e.g. "Plan- og byggesaker 2003-2015" and "fra 2015"). Search all of them unless the user limits the period.
 3. **Property history:** search `gnr_bnr` first ("12/345"). Then search the street address in `title` ("Storgata 1"), because older or neighbouring cases are often filed under the address or a neighbour's number. Then owners' names in `party`.
-4. **Read cases, not just hits.** `get_case` lists every published document. `get_document` shows files; `orderOnly: true` means nothing is published and the user must send an innsynskrav (offentleglova § 3) to the kommune. Offer draft wording; never send it yourself.
-5. **Download** with `download` (a whole case `a-...` or one document `d-...`). Files are named `YYYY-MM-DD_<title> (<DokumentID>).pdf` and existing files are skipped, so it is safe to resume.
+   Every search needs at least one filter; unfiltered searches are rejected. Results are capped at 50 per data source by default (`max`).
+4. **Read cases, not just hits.** `get_case` lists every published document, but the list alone does not say whether a document has files. Use `with_files: true` to add `fileCount` and `orderOnly` per document (one extra request each), or `get_document` for one document. `orderOnly: true` means nothing is published and the user must send an innsynskrav (offentleglova § 3) to the kommune. Offer draft wording; never send it yourself.
+5. **Download** with `download` (a whole case `a-...` or one document `d-...`). Files are named `YYYY-MM-DD_<title> (<DokumentID>).pdf` and existing files are skipped, so it is safe to resume. Order-only documents are listed in the result, not fetched.
+
+## Downloads need Playwright
+
+Search and reading work with Node alone. Downloads need Playwright with a matching Chromium:
+
+- Install globally: `npm i -g playwright && npx playwright install chromium`, or set `ACOS_PLAYWRIGHT_MODULE` to an installed module's path. Restart the MCP server afterwards (in Claude Code: `/reload-plugins` or restart).
+- Each Playwright version needs one specific Chromium build. If the environment ships browsers in a fixed `PLAYWRIGHT_BROWSERS_PATH` (common in Docker images), install the Playwright version that matches them instead of the latest.
+- If the tool says Playwright is missing or its browser does not match, tell the user the exact fix from the error. Search and metadata still work meanwhile.
 
 ## Reporting
 

@@ -52,6 +52,7 @@ export function listPortals({ withSource } = {}) {
       kommunenummer: p.kommunenummer,
       datasources: (p.datasources || []).map((d) => d.name),
       hasByggesak: (p.datasources || []).some((d) => /bygg/i.test(d.name) || d.caseTypes?.some((t) => /bygg/i.test(t))),
+      ...(p.datasources?.length ? {} : { note: 'Portal exists, but no searchable journal was found (meetings only, or an unknown page layout).' }),
     })),
   };
 }
@@ -75,14 +76,28 @@ export async function search(kommune, q) {
   const p = await portal(kommune);
   const out = [];
   for (const ds of await sources(p, q.source)) {
-    const r = await p.searchAll({ ...q, datasource: ds.id }, q.max ?? 200);
+    const r = await p.searchAll({ ...q, datasource: ds.id }, q.max ?? 50);
     out.push({ source: ds.name, total: r.total, items: r.items });
   }
   return out;
 }
 
-export async function getCase(kommune, caseId) {
-  return (await portal(kommune)).getCase(caseId);
+/**
+ * Case with its document list. withFiles adds orderOnly and fileCount per document
+ * (one extra request per document, at most maxDocs documents).
+ */
+export async function getCase(kommune, caseId, { withFiles = false, maxDocs = 30 } = {}) {
+  const p = await portal(kommune);
+  const c = await p.getCase(caseId);
+  if (withFiles) {
+    for (const d of c.documents.slice(0, maxDocs)) {
+      const doc = await p.getDocument(d.id);
+      d.fileCount = doc.files.length;
+      d.orderOnly = doc.orderOnly;
+    }
+    if (c.documents.length > maxDocs) c.note = `File info added for the first ${maxDocs} of ${c.documents.length} documents.`;
+  }
+  return c;
 }
 
 export async function getDocument(kommune, docId) {
