@@ -1,0 +1,2286 @@
+{
+ "generated": "2026-11-18",
+ "source": "SSB klass 131 + probe of innsynpluss.onacos.no/<slug>/",
+ "portals": [
+  {
+   "kommunenummer": "1112",
+   "name": "Lund",
+   "slug": "lund",
+   "searchPath": "sok",
+   "portalId": 120,
+   "menypunktId": 1993,
+   "datasources": [
+    {
+     "id": "1aa0271d-7c95-48c6-ae99-fbb32f36c6c1",
+     "name": "Arkiv fra 2023 til i dag",
+     "caseTypes": [
+      "Barnehagesak",
+      "Generell sak",
+      "Gårdssak",
+      "Personalmappe",
+      "Personalsak"
+     ]
+    },
+    {
+     "id": "7ed4b9db-8e40-42e5-b2ca-6d01baef801f",
+     "name": "Historisk arkiv 2007-2022",
+     "caseTypes": [
+      "Byggesak",
+      "Delingsak",
+      "Elektronisk post",
+      "Enkel sak",
+      "Plansaker",
+      "Reguleringssaker"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "1580",
+   "name": "Haram",
+   "slug": "haram",
+   "searchPath": "sok",
+   "portalId": 25,
+   "menypunktId": 475,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Barnehagemappe",
+      "Byggesak",
+      "Delesak",
+      "Fulltekstpublisert sak",
+      "Generell sak",
+      "Landbrukskontoret",
+      "Møtesak",
+      "Personalmappe politikarar",
+      "Plansak",
+      "Rørleggersak",
+      "Tilsettingssak",
+      "Utleige - kommunal bustad"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "1837",
+   "name": "Meløy",
+   "slug": "meloy",
+   "searchPath": "sok",
+   "portalId": 30,
+   "menypunktId": 545,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Ansettelsessak",
+      "Barnehagemappe",
+      "Byggesak",
+      "Delingssak",
+      "Eiendomsskatt",
+      "Elevmappe",
+      "Generell sak",
+      "Innsynssak",
+      "Klientmappe",
+      "Landbrukssak",
+      "Møtesaker",
+      "Personalmappe",
+      "Personalsak",
+      "Plansak",
+      "Vei, vann og avløp"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "1839",
+   "name": "Beiarn",
+   "slug": "beiarn",
+   "searchPath": "sok",
+   "portalId": 110,
+   "menypunktId": 1833,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Byggesak",
+      "Delesak",
+      "Generell sak",
+      "Klientsak",
+      "Landbruk",
+      "Landbrukssak",
+      "Møtesak",
+      "Næringssak",
+      "Plansak",
+      "Valgsak",
+      "VVA sak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "1841",
+   "name": "Fauske",
+   "slug": "fauske",
+   "searchPath": "postliste",
+   "portalId": 99,
+   "menypunktId": 1614,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Arealoverføring",
+      "Barnehagesak",
+      "Byggesak",
+      "Delingssak",
+      "Egenerklæring om konsesjonsfrihet",
+      "Elevsak",
+      "Forurensing/forsøpling",
+      "Grensejustering",
+      "Grensepåvisning",
+      "Grunnerverv vei/jernbane",
+      "Heftelser",
+      "Jordsameie",
+      "Jordskiftesak",
+      "Klarlegging av grense",
+      "Konsesjon",
+      "Landbrukssak",
+      "Møtesaker opprettet i ACOS Møtemodul",
+      "Oppmålingsssak",
+      "Personalsak",
+      "Plansak",
+      "Retting eiendomskart",
+      "Salg av eiendom",
+      "Sammenslåing",
+      "Seksjoneringssak",
+      "Tilsettingssak",
+      "TOM",
+      "VVA sak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3116",
+   "name": "Skiptvet",
+   "slug": "skiptvet",
+   "searchPath": "sok",
+   "portalId": 111,
+   "menypunktId": 1848,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Anskaffelsessak",
+      "Brann og redning",
+      "Byggesak",
+      "Elevsak",
+      "Generell sak",
+      "Landbrukssak",
+      "Matrikkelsak",
+      "Plansak",
+      "Utslippssak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3122",
+   "name": "Marker",
+   "slug": "marker",
+   "searchPath": "sok",
+   "portalId": 38,
+   "menypunktId": 669,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Barnehagesak",
+      "Byggesak",
+      "Delingssak",
+      "Landbrukssak",
+      "Matrikkelsak",
+      "Møtesak",
+      "Oppmålingsssak",
+      "Personalsak",
+      "Plansak",
+      "Seksjoneringssak",
+      "Standard sak",
+      "Startlån, bolig, gjeldsrådgivning",
+      "Utslipp",
+      "VVA sak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3201",
+   "name": "Bærum",
+   "slug": "baerum",
+   "searchPath": "postliste",
+   "portalId": 94,
+   "menypunktId": 1538,
+   "datasources": [
+    {
+     "id": "9b0d213e-fe0c-4011-8cf4-2ad0b339c8b5",
+     "name": "Postliste",
+     "caseTypes": [
+      "Ansettelsessak",
+      "Anskaffelsessaker",
+      "Barnehagesøknader",
+      "Byggesak",
+      "Delesak",
+      "For adresse- og gatenavn",
+      "Generell sak",
+      "Grunneierkontakt",
+      "Klage adressering",
+      "Klage byggesak",
+      "Klage delesak",
+      "Klage Enkeltvedtak",
+      "Klage reguleringssaker",
+      "Oppmålingssak",
+      "Påleggssaker Vann og avløp",
+      "Reguleringssaker",
+      "Rørleggeranmeldelser",
+      "Seksjonering",
+      "Serverings- og skjenkebevillingssaker",
+      "Tilskudd - barn og unge - driftsstøtte",
+      "Tilskudd - barn og unge - særskilte tiltak",
+      "Tilskudd - ENØK",
+      "Tilskudd - fritidsstipend",
+      "Tilskudd - frivillighet - frivillighetsmidler",
+      "Tilskudd - helse og velferd",
+      "Tilskudd - idrettslag - anlegg",
+      "Tilskudd - idrettslag - klubbhus",
+      "Tilskudd - idrettslag - kunstgress",
+      "Tilskudd - idrettslag - leie",
+      "Tilskudd - idrettslag - nedsatt funksjon",
+      "Tilskudd - idrettslag - vedlikehold anlegg",
+      "Tilskudd - IMDi",
+      "Tilskudd - kultur - arrangement/prosjekt",
+      "Tilskudd - kultur - ordinær drift",
+      "Tilskudd - kulturstipend",
+      "Tilskudd - kulturvernformål",
+      "Tilskudd - Naturforbedrende tiltak",
+      "Tilskudd-kultur-arrangement/prosjekt-frist 1/10",
+      "Tiltaksplaner forurensingsloven Renovasjon",
+      "Timeliste Fritid og avlastning",
+      "Ulovlighetsoppfølging",
+      "Vann og avløp"
+     ]
+    },
+    {
+     "id": "c64dd445-db2e-44e8-95ea-44228858681e",
+     "name": "Politiske saker fra 2015",
+     "caseTypes": [
+      "Ansettelsessak",
+      "Byggesak",
+      "Delesak",
+      "For adresse- og gatenavn",
+      "Generell sak",
+      "Klage adressering",
+      "Klage byggesak",
+      "Klage delesak",
+      "Klage Enkeltvedtak",
+      "Klage reguleringssaker",
+      "Oppmålingssak",
+      "Reguleringssaker",
+      "Serverings- og skjenkebevillingssaker",
+      "Ulovlighetsoppfølging",
+      "Vann og avløp"
+     ]
+    },
+    {
+     "id": "8de09341-cd12-4975-9460-e28961550ab5",
+     "name": "Plan- og byggesaker fra 2015",
+     "caseTypes": [
+      "Byggesak",
+      "Delesak",
+      "For adresse- og gatenavn",
+      "Generell sak",
+      "Grunneierkontakt",
+      "Klage adressering",
+      "Klage byggesak",
+      "Klage delesak",
+      "Klage Enkeltvedtak",
+      "Klage reguleringssaker",
+      "Oppmålingssak",
+      "Påleggssaker Vann og avløp",
+      "Reguleringssaker",
+      "Rørleggeranmeldelser",
+      "Seksjonering",
+      "Tiltaksplaner forurensingsloven Renovasjon",
+      "Ulovlighetsoppfølging",
+      "Vann og avløp",
+      "Vannmåler - registrering"
+     ]
+    },
+    {
+     "id": "1e65924d-7b72-4737-83a6-367be2898887",
+     "name": "Politiske saker 2003-2015",
+     "caseTypes": [
+      "Ansettelsessak",
+      "Byggesak",
+      "Delingsak",
+      "Generell sak",
+      "Klage byggesak",
+      "Klage delesak",
+      "Klage reguleringssaker",
+      "Oppmålingssak",
+      "Påleggssaker Vann og avløp",
+      "Reguleringssaker",
+      "Rørleggeranmeldelser",
+      "Sas_kategoriId",
+      "Seksjonering",
+      "Serverings- og skjenkebevillingssaker",
+      "Tiltaksplaner forurensingsloven Renovasjon",
+      "Ulovlighetsoppfølging"
+     ]
+    },
+    {
+     "id": "ae6e937e-a279-4b7b-99c7-e38f9a93cfd6",
+     "name": "Plan- og byggesaker 2003-2015",
+     "caseTypes": [
+      "Ansettelsessak",
+      "Byggesak",
+      "Delingsak",
+      "Generell sak",
+      "Klage byggesak",
+      "Klage delesak",
+      "Klage reguleringssaker",
+      "Oppmålingssak",
+      "Påleggssaker Vann og avløp",
+      "Reguleringssaker",
+      "Rørleggeranmeldelser",
+      "Sas_kategoriId",
+      "Sas_kategoriId",
+      "Sas_kategoriId",
+      "Seksjonering",
+      "Tiltaksplaner forurensingsloven Renovasjon",
+      "Ulovlighetsoppfølging"
+     ]
+    },
+    {
+     "id": "494d4ec8-7350-4d38-841d-d2fd94ed6d1a",
+     "name": "Rørleggerarkiv 1880-2007",
+     "caseTypes": [
+      "Rørleggeranmeldelser"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3209",
+   "name": "Ullensaker",
+   "slug": "ullensaker",
+   "searchPath": "postliste",
+   "portalId": 124,
+   "menypunktId": 2061,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Anmeldelse",
+      "Arbeidstilltatelse - Geosak",
+      "Bevillinger",
+      "Byggesak",
+      "Byggetilsyn",
+      "Delingssak",
+      "Elever og studenter i praksis",
+      "Elevsak",
+      "Elevsak for Voksenopplæring",
+      "Generell sak",
+      "Generell sak med streng tilgang",
+      "Gravetillatelse - Geosak",
+      "Kommunale utleieboliger",
+      "Landbrukssak",
+      "Møtesak",
+      "Nærings- og industripåslipp (årsrapport)",
+      "Offentlig høring",
+      "Omsetningsrapportering for salg og skjenk",
+      "Oppmålingssak",
+      "Plansak",
+      "Seksjonering",
+      "Skatt og Kemnersaker fra før 2021",
+      "Startlånsak",
+      "Søknad om tillatelse - Nærings- og industrpåslipp",
+      "Tilsettingsak",
+      "Vei, vann og avløp",
+      "Vigsel",
+      "Webcruiter"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3228",
+   "name": "Nes",
+   "slug": "nes",
+   "searchPath": "sok",
+   "portalId": 59,
+   "menypunktId": 988,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Bevillinger",
+      "Byggesak",
+      "Byggesak - Tilsyn",
+      "Delingssak",
+      "Generell sak",
+      "Klage - byggesak",
+      "Møtesak",
+      "Oppmålingssak",
+      "Parkeringstillatelse for forflytningshemmede",
+      "Personalsak",
+      "Plansak",
+      "Seksjonering",
+      "Tilsetting",
+      "Tilsetting",
+      "Ulovlighetsoppfølging",
+      "Vei, vann og avløp",
+      "Vielse"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3230",
+   "name": "Gjerdrum",
+   "slug": "gjerdrum",
+   "searchPath": "sok",
+   "portalId": 61,
+   "menypunktId": 1015,
+   "datasources": [
+    {
+     "id": "03460e08-6ea6-43fd-a6e7-0753d6c1e146",
+     "name": "Innsyn Gjerdrum Postliste",
+     "caseTypes": [
+      "Ansettelsesak",
+      "Barnevern",
+      "Bevillinger",
+      "Byggesak",
+      "Delingssak",
+      "Elevsak",
+      "Generell sak",
+      "Kommunal utleiebolig",
+      "Møtesak",
+      "Oppmålingssak",
+      "Plansak",
+      "Seksjonering",
+      "Tilsetting",
+      "Vei, vann og avløp",
+      "Vigsel"
+     ]
+    },
+    {
+     "id": "d998a544-e1b0-4205-9ca1-1d3de40d630f",
+     "name": "Innsyn Gjerdrum Historisk 01",
+     "caseTypes": [
+      "Byggesak",
+      "Plansak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3234",
+   "name": "Lunner",
+   "slug": "lunner",
+   "searchPath": "postliste",
+   "portalId": 91,
+   "menypunktId": 1489,
+   "datasources": [
+    {
+     "id": "baf8f11a-5e84-4623-959f-712599500887",
+     "name": "Arkiv fra 2019 til d.d.",
+     "caseTypes": [
+      "Ansettelsesak",
+      "Anskaffelse",
+      "Byggesak",
+      "Byggoppfølging",
+      "Delingssak",
+      "Egenerklæring om konsesjonsfrihet",
+      "Eiendomsskattesak",
+      "Forenklet matrikkelføring",
+      "Generell sak",
+      "Jordskifteretten",
+      "Møtesak",
+      "Oppmålingssak",
+      "Plansak",
+      "Retting i matrikkelen",
+      "Sammenslåing",
+      "Seksjoneringssak",
+      "Startlånsak",
+      "Statens Vegvesen",
+      "Stedsnavn og adressering",
+      "Tilsynssak",
+      "Vann og avløpssak"
+     ]
+    },
+    {
+     "id": "208727b4-38c6-4c05-b3b7-c846acba41b8",
+     "name": "Møtesaker fra før 2019",
+     "caseTypes": [
+      "Standard sak",
+      "Utvalgsmøte"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3236",
+   "name": "Jevnaker",
+   "slug": "jevnaker",
+   "searchPath": null,
+   "portalId": null,
+   "menypunktId": null,
+   "datasources": [],
+   "note": "Portal exists but no searchable postliste/sok page was found"
+  },
+  {
+   "kommunenummer": "3238",
+   "name": "Nannestad",
+   "slug": "nannestad",
+   "searchPath": "postliste",
+   "portalId": 60,
+   "menypunktId": 994,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Barnehagesak",
+      "Bevillinger",
+      "Byggesak",
+      "Delingssak",
+      "Elevsak",
+      "Generell sak",
+      "Kommunal bolig",
+      "Kommunal innfordring bedrifter",
+      "Kommunal innfordring personer",
+      "Møtesak",
+      "Oppmålingssak",
+      "Personalsak",
+      "Plansak",
+      "Seksjonering",
+      "Startlån",
+      "Tilsetting",
+      "Vei, vann og avløp"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3240",
+   "name": "Eidsvoll",
+   "slug": "eidsvoll",
+   "searchPath": "postliste",
+   "portalId": 62,
+   "menypunktId": 982,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Anskaffelsessak",
+      "Avløpsanlegg",
+      "Bevillinger",
+      "Byggesak",
+      "Drenering",
+      "Eiendom",
+      "Elevsak",
+      "Forurensing",
+      "Fradeling",
+      "Generell sak",
+      "Gravferd",
+      "Helse",
+      "Infrastruktur",
+      "Innsynsbegjæring",
+      "Kommunal eiendom",
+      "Kommunale eiendomsgebyrer",
+      "Landbruk",
+      "Møtesak",
+      "Næringsvirksomhet",
+      "Olje- og fettutskiller",
+      "Oppdragsmappe - Støttekontakt",
+      "Oppmålingssak",
+      "Parkeringskort for forflytningshemmede",
+      "Plansak",
+      "Prosjekt Eiendom",
+      "Renovasjon",
+      "Sanitærabonnement",
+      "Seksjonering",
+      "Septik",
+      "Skogfond",
+      "Tilbakeslagssikring",
+      "Tilsettingssak",
+      "Tilsyn - Byggesak",
+      "Tilsyn - Sak",
+      "Veger",
+      "Vei, vann og avløp"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3242",
+   "name": "Hurdal",
+   "slug": "hurdal",
+   "searchPath": "postliste",
+   "portalId": 58,
+   "menypunktId": 1021,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Anskaffelsessak",
+      "Barnehagesak",
+      "Bevillinger",
+      "Byggesak",
+      "Delingssak",
+      "Eiendomsskatt",
+      "Elevsak",
+      "Generell sak",
+      "Møtesak",
+      "Oppmålingssak",
+      "Personalsak",
+      "Plansak",
+      "Seksjonering",
+      "Startlån",
+      "Tilsetting",
+      "Vei, vann og avløp",
+      "Vigsel"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3305",
+   "name": "Ringerike",
+   "slug": "ringerike",
+   "searchPath": "sok-i-postlistene",
+   "portalId": 87,
+   "menypunktId": 1414,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Adresseringssak",
+      "Brannsak",
+      "Byggesak",
+      "Byggesak miljøsak",
+      "Delingssak",
+      "Eiendomssikring",
+      "Eiendomsskattesak",
+      "Elevsak",
+      "Generell sak",
+      "Helse og omsorg",
+      "Innkjøpssak",
+      "Kjøp av eiendom",
+      "Klagesak",
+      "Kontraksarkiv",
+      "Landbrukssak",
+      "Landbrukssak- Hole",
+      "Legevakt",
+      "Leie- og festeavtaler",
+      "Leieavtaler - Kommunal bolig",
+      "Møtesak",
+      "Oppmålingssak",
+      "Plansak",
+      "Prosjektsak",
+      "Rekrutteringssak",
+      "Sak ledsagerbevis",
+      "Sak miljørettet helsevern",
+      "Sak parkeringstillatelse for forflyttingshemmede",
+      "Sak redusert betaling oppvekst",
+      "Sak salgsbevilling",
+      "Sak søknad om kulturmidler",
+      "Sak TT-kort",
+      "Salg av eiendom",
+      "Skjenkesak",
+      "Skogforvaltning",
+      "Startlån",
+      "Tillatelser og rettigheter",
+      "Trefelling på kommunal grunn av privatpersoner",
+      "Utslipp og forurensing"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3310",
+   "name": "Hole",
+   "slug": "hole",
+   "searchPath": "postliste",
+   "portalId": 154,
+   "menypunktId": 2396,
+   "datasources": [
+    {
+     "id": "dc4eb542-6bdd-4e39-8865-5bbbcc129298",
+     "name": "Saker fra mai 2026",
+     "caseTypes": [
+      "Adressering",
+      "Avløp",
+      "Byggesak",
+      "Delesak",
+      "Generell sak",
+      "Høring",
+      "Klage byggesak",
+      "Klage reguleringsak",
+      "Kommunal bolig, søknader og midl leiekontrakt",
+      "Ledsagerbevis for funksjonshemmede",
+      "Møtesak",
+      "Natur og miljø",
+      "Oppmålingssak - arealoverføring",
+      "Oppmålingsssak",
+      "Oppmålingsssak - Grensepåvisning",
+      "Parkeringstillatelse for funksjonshemmede",
+      "Plansak",
+      "Seksjoneringssak",
+      "Skjenkebevilling - ambulerende",
+      "Skjenkebevilling - fast",
+      "Startlån",
+      "Søknad om disp for motorferdsel",
+      "Søknad om serveringsbevilling",
+      "Tilsetting, rekrutteringssaker",
+      "Ulovlighetssak",
+      "Vannmåler",
+      "Vannverk",
+      "Vigsel / vielse"
+     ]
+    },
+    {
+     "id": "a0eba40f-163a-4d08-889a-de9a51909c1a",
+     "name": "Historiske saker 2007-2026",
+     "caseTypes": [
+      "Avløp ",
+      "Byggesak",
+      "Delesak (Søknad om deling av grunneiendom)",
+      "Generell sak",
+      "Klage Byggesak",
+      "Klage Delesak",
+      "Klage Reguleringsak",
+      "Kommuneplan ",
+      "Møtesak",
+      "Natur og Miljø",
+      "Oppmålingssak",
+      "Plansak",
+      "Reguleringsplan ",
+      "Søknad om konsesjon",
+      "Ulovlighetssak",
+      "Vannmåler "
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3316",
+   "name": "Modum",
+   "slug": "modum",
+   "searchPath": "sok",
+   "portalId": 93,
+   "menypunktId": 1523,
+   "datasources": [
+    {
+     "id": "0243cf1f-fb7e-4688-893d-7b993faa24b8",
+     "name": "Arkiv fra mai 2021",
+     "caseTypes": [
+      "Adressesak/Adresseendring",
+      "Anbud/anskaffelse",
+      "Barnehagesak",
+      "Barnevern anmodninger",
+      "Byggesak",
+      "Delesak",
+      "Flyktningesak",
+      "Generell sak",
+      "Gravplass",
+      "Klage",
+      "Kultur - tilskudd. Lag og foreninger",
+      "Kulturskole elevsak",
+      "Landbrukssak",
+      "Motorferdsel",
+      "Møtesak",
+      "Oppmålingssak",
+      "Plansak",
+      "Produksjonstilskudd",
+      "Reduksjon av foreldrebetaling",
+      "Refusjonskrav -  gjesteelever/barnehagebarn",
+      "Regionalt miljøtilskudd",
+      "Rekruttering sak",
+      "Seksjonering",
+      "Skjenkebevilling",
+      "Spillemidler",
+      "Startlån",
+      "Tilsyn",
+      "Varsling",
+      "Vei Vann Avløp",
+      "Vigsel",
+      "Voksenopplæring"
+     ]
+    },
+    {
+     "id": "165010b5-43a5-4e8d-baff-3e2164d7c1b2",
+     "name": "Historisk arkiv 2013-2021",
+     "caseTypes": [
+      "Byggesak",
+      "Delingssak",
+      "Plansak",
+      "Standard sak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3416",
+   "name": "Eidskog",
+   "slug": "eidskog",
+   "searchPath": "sok-etter-politiske-saker-2009-2016",
+   "portalId": 33,
+   "menypunktId": 591,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Barnehage",
+      "Enkel sak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3430",
+   "name": "Os",
+   "slug": "os",
+   "searchPath": "postliste",
+   "portalId": 28,
+   "menypunktId": 520,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Avgifter",
+      "Byggesak",
+      "Delingssak",
+      "Eierskap",
+      "Elevsak",
+      "Generell sak",
+      "Juridiske avtaler",
+      "Kommunal bolig",
+      "Landbrukssak Holtålen",
+      "Landbrukssak OS",
+      "Landbrukssak Røros",
+      "Motorferdsel - OS",
+      "Møtesak",
+      "Naturforvaltning Røros",
+      "Oppmålingssak",
+      "Plansak",
+      "Skjenkesak",
+      "Skogbrukssak Holtålen",
+      "Skogbrukssak OS",
+      "Skogbrukssak Røros",
+      "Tilsettingssak",
+      "Vigsel"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3447",
+   "name": "Søndre Land",
+   "slug": "sondre-land",
+   "searchPath": "sok-i-offentlig-journal",
+   "portalId": 83,
+   "menypunktId": 1468,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Byggesak",
+      "Deling etter jordloven",
+      "Delingssak",
+      "Generell sak",
+      "Husbanken",
+      "Husbanken - Kommunale boliger",
+      "Konsesjonssak",
+      "Landbrukssak",
+      "Motorferdsel",
+      "Møtesak",
+      "Nydyrking etter jordloven",
+      "Oppmålingssak",
+      "Personalmappe",
+      "Plansak",
+      "Rekrutteringssak",
+      "Seksjoneringssak",
+      "Vei, vann og avløp"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3448",
+   "name": "Nordre Land",
+   "slug": "nordre-land",
+   "searchPath": "sok",
+   "portalId": 36,
+   "menypunktId": 639,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Avtalesak",
+      "Barnesak",
+      "Brannsak",
+      "Byggesak",
+      "Delingssak",
+      "Elevsak",
+      "Generell sak",
+      "Kommunale eiendomssaker",
+      "Landbrukssak",
+      "Møtesak",
+      "Oppmålingssak",
+      "Personalsak",
+      "Plansak",
+      "Tilsettingssak",
+      "Utslippssak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "3909",
+   "name": "Larvik",
+   "slug": "larvik",
+   "searchPath": "sok",
+   "portalId": 72,
+   "menypunktId": 1180,
+   "datasources": [
+    {
+     "id": "a33aa9ba-e239-4da4-bb8a-c08ce91d309f",
+     "name": "Postliste",
+     "caseTypes": [
+      "Adressering",
+      "Ansettelsessaker",
+      "Anskaffelse",
+      "Avkjørselssaker",
+      "Bevillingsaker",
+      "Brannforebygging",
+      "Branntilsyn",
+      "Byggesak",
+      "Delingsak",
+      "Eiendomsskatt",
+      "Generell sak",
+      "Konsesjon/eiendom - samlesaker for egenerklæringer",
+      "Landbrukssaker",
+      "Miljørettet Helsevern",
+      "Møtesaker",
+      "Plansak",
+      "Sanitærmeldinger",
+      "Seksjoneringssak",
+      "Startlån",
+      "Tilsynssak"
+     ]
+    },
+    {
+     "id": "d29ec87d-ee23-4441-a00d-62a95a678ee5",
+     "name": "Politiske saker",
+     "caseTypes": [
+      "Adressering",
+      "Ansettelsessaker",
+      "Anskaffelse",
+      "Bevillingsaker",
+      "Byggesak",
+      "Delingsak",
+      "Eiendomsskatt",
+      "Generell sak",
+      "Landbrukssaker",
+      "Møtesaker",
+      "Plansak",
+      "Seksjoneringssak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "4001",
+   "name": "Porsgrunn",
+   "slug": "porsgrunn",
+   "searchPath": "sok-i-postliste",
+   "portalId": 6,
+   "menypunktId": 228,
+   "datasources": [
+    {
+     "id": "4cffb8ae-a782-42c9-b8ec-0bd9f73bd8d0",
+     "name": "Arkiv fra 2023",
+     "caseTypes": [
+      "Aktiv hele livet",
+      "Anskaffelse",
+      "Bli med-midler",
+      "Boligsak",
+      "Byggesak",
+      "Deling etter plan og bygningsloven",
+      "Eiendomsforvaltning",
+      "Fritidskortet",
+      "Generell sak",
+      "Innsynssak",
+      "Klientsak",
+      "Kontingentkasse",
+      "Miljøsak",
+      "Møtesak",
+      "Oppmålingssak",
+      "Plansak",
+      "Seksjonering",
+      "Systemdokumentasjonssak",
+      "Tilsetting",
+      "Tilsyn",
+      "Ulovlighetsoppfølging",
+      "Vann og avløp",
+      "Vegdrift"
+     ]
+    },
+    {
+     "id": "e7ab515d-3328-4812-8714-f885ce6899d6",
+     "name": "Historisk arkiv 2012-2023",
+     "caseTypes": [
+      "Byggesak",
+      "Oppmåling",
+      "Plansak",
+      "Sak"
+     ]
+    },
+    {
+     "id": "3012bfe2-d356-4e15-a8a1-0d83b25807c1",
+     "name": "Historisk arkiv 1996-2012",
+     "caseTypes": [
+      "Byggesak",
+      "Generell sak",
+      "Oppmåling",
+      "Plansak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "4003",
+   "name": "Skien",
+   "slug": "skien",
+   "searchPath": "sok",
+   "portalId": 2,
+   "menypunktId": 210,
+   "datasources": [
+    {
+     "id": "ae06af7c-b237-4c33-8353-7b34f80749f9",
+     "name": "Saker fra juni 2023",
+     "caseTypes": [
+      "Ansettelsesforhold",
+      "Anskaffelse",
+      "Attestasjonsmyndighet",
+      "Avkjøringstillatelse (kommunal vei)",
+      "Avvik til/fra eksterne",
+      "Boligsak",
+      "Byggesak",
+      "Byggesak - henvendelse fra NAV angående boenheter.",
+      "Deling etter jordlova",
+      "Deling etter plan og bygningsloven",
+      "Eiendomsforvaltning",
+      "Elevsak",
+      "Endring av opplysninger - eiendomsskatt",
+      "Energitiltak næring",
+      "Energitiltak private",
+      "Feilberegning lønn",
+      "Generell sak",
+      "Generelle henvendelser helse og mestring",
+      "Innfordring",
+      "Innsynssak",
+      "Jordleiekontrakter",
+      "Klage på takst - eiendomsskatt",
+      "Klagesak - helse og mestring",
+      "Klientsak",
+      "Landbrukssak",
+      "Meddommer",
+      "Miljøsak",
+      "Møtesak",
+      "Nedsettelse eller ettergivelse - e-skatt",
+      "Oppmålingssak",
+      "Personal - MRSA og tuberkuloseskjema",
+      "Personal - tuberkuloseskjema",
+      "Personalsak",
+      "Personalsak - Foreldrepermisjon",
+      "Plansak",
+      "Prosjekt - hovedmappe",
+      "Prosjekt - korrespondanse",
+      "Prosjekt - tillatelser og avtaler",
+      "RIG - Anskaffelsesmappe",
+      "RIG - Personalmappe",
+      "Seksjonering",
+      "Skogfond",
+      "Skolemiljøsak",
+      "smitteutbrudd Helse og mestring",
+      "Tilsetting",
+      "Tilsyn byggesak",
+      "Tilsyn med enhet helse og mestring",
+      "Ulovlighetsoppfølging",
+      "Utdanningsstøtte",
+      "Vann og avløp",
+      "Vielse",
+      "Vitnemål og karakterer"
+     ]
+    },
+    {
+     "id": "3c36e1d0-b57d-4624-9080-54e29e746580",
+     "name": "Historiske saker 2013-2023",
+     "caseTypes": [
+      "Byggesak",
+      "Møtesak",
+      "Oppmåling",
+      "Plansak",
+      "Sak",
+      "Vann og Avløp"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "4010",
+   "name": "Siljan",
+   "slug": "siljan",
+   "searchPath": "sok-i-postliste",
+   "portalId": 8,
+   "menypunktId": 233,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Anskaffelse",
+      "Byggesak",
+      "Deling etter plan og bygningsloven",
+      "Eiendomsforvaltning",
+      "Forhandling",
+      "Generell sak",
+      "Innsynssak",
+      "Klientsak",
+      "Oppmålingssak",
+      "Seksjonering",
+      "Tilsetting",
+      "Tilsyn",
+      "Vann og avløp"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "4012",
+   "name": "Bamble",
+   "slug": "bamble",
+   "searchPath": "sok",
+   "portalId": 5,
+   "menypunktId": 216,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Autoarkivarjobber",
+      "Barnehagesak",
+      "Barnehagesaker sensitivt",
+      "Bevilling",
+      "Byggesak",
+      "Deling etter plan og bygningsloven",
+      "Eiendomsskatt",
+      "Generell sak",
+      "Generell sak - Skjærgårdshallen",
+      "Høringer",
+      "Innsparingsprogram 2025 - 2027",
+      "Kommunal avgift",
+      "Kommunal bolig",
+      "Kun leder",
+      "Landbrukssak",
+      "Miljøsak",
+      "Oppmålingssak",
+      "Personalsak",
+      "Personalsak sensitivt",
+      "Plansak",
+      "Seksjonering",
+      "Spillemidler",
+      "Startlån",
+      "Tilsyn",
+      "Ulovlighetsoppfølging",
+      "Voksenopplæring"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "4016",
+   "name": "Drangedal",
+   "slug": "drangedal",
+   "searchPath": "sok-i-postliste",
+   "portalId": 7,
+   "menypunktId": 223,
+   "datasources": [
+    {
+     "id": "a6f4633e-ac72-40c4-9938-2a4b558577a8",
+     "name": "Saker fra juni 2023",
+     "caseTypes": [
+      "Barnehagesak",
+      "Byggesak",
+      "Deling etter jordlova",
+      "Deling etter plan og bygningsloven",
+      "Elevsak sensitivt",
+      "Generell sak",
+      "Innsynssak",
+      "Klientsak",
+      "Landbrukssak",
+      "Møtesak",
+      "Oppmålingssak",
+      "Plansak",
+      "Tilsetting",
+      "Tilsyn",
+      "Ulovlighetsoppfølging",
+      "Vann og avløp"
+     ]
+    },
+    {
+     "id": "d8c25a89-83b0-45ac-bab3-1b849bcbedd2",
+     "name": "Historiske saker 2012-2023",
+     "caseTypes": [
+      "Byggesak",
+      "Landbrukssak",
+      "Oppmåling",
+      "Plansak",
+      "Sak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "4215",
+   "name": "Lillesand",
+   "slug": "lillesand",
+   "searchPath": "postliste",
+   "portalId": 85,
+   "menypunktId": 1384,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      ".3-ukers sak",
+      ".Befaring",
+      ".Behandlet",
+      ".Dispensasjon",
+      ".Endringssøknad",
+      ".Erstatningssak",
+      ".Ferdigattest/midl. brukstillatelse",
+      ".Forhåndskonferanse",
+      ".Igangsettingstillatelse",
+      ".Klagesak",
+      ".Melding",
+      ".Melding med disp (LNF)",
+      ".Mottakskontroll",
+      ".Rammetillatelse med disp",
+      ".Rammetillatelse uten disp",
+      ".Sendt fylkesmannen",
+      ".Sjøledning/mudring/pumpestasjon",
+      ".Terrenginngrep",
+      ".Tiltak med disp",
+      ".Tiltak uten disp",
+      ".Ulovlige tiltak",
+      ".Utslipp",
+      ".Venter på dokumentasjon",
+      ".Venter på ferdigattest",
+      ".Venter på igangsetting",
+      ".Venter på uttalelse",
+      "Befaring av vann- og avløpsanlegg",
+      "Byggesak",
+      "Generell sak",
+      "Henvendelse vann og avløp",
+      "Henvendelser til byggesak",
+      "Parkeringstillatelse for forflytningshemmede",
+      "Personalsak",
+      "Plansaker",
+      "Salgs- og skjenkebevillinger",
+      "Sanering av vann- og avløpsanlegg",
+      "TFritak",
+      "TSakkyndig nemnd",
+      "UAdresseringssaker",
+      "UArealoverføring",
+      "UDeling",
+      "UEierseksjon",
+      "UMatrikulering uten fullført oppmålingsforretning",
+      "USammenslåing",
+      "Vann- og avløpsgebyrer",
+      "Vann- og avløpssak",
+      "Varslingssaker",
+      "VVA saker",
+      "ZDelingssak",
+      "ZElektronisk post",
+      "ZEnkeltsak",
+      "ZReguleringssaker"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "4216",
+   "name": "Birkenes",
+   "slug": "birkenes",
+   "searchPath": "postliste",
+   "portalId": 84,
+   "menypunktId": 1369,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Adressenavn - navneutvalget",
+      "Analyserapporter renseanlegg",
+      "Analyserapporter vannverk",
+      "Anbudssaker",
+      "Anmeldelser - påtalebegjæringer",
+      "Avløsning sykdom - jordbruk",
+      "Avtaler ",
+      "Boligutvalget - søknader om kommunal bolig",
+      "Bygdeutviklingsmidler (BU-midler)",
+      "Byggesak",
+      "Byggesak - Tilsyn og ulovlighetsoppfølging",
+      "Delingssak innen byggesaksavdelingen",
+      "Dokumentasjon kun for arkivtjenesten",
+      "Egenerklæring om konsesjonsfrihet - jordbruk ",
+      "Elevmapper",
+      "Flyktningsaker",
+      "Foreldrearbeidsutvalg (FAU)",
+      "Generell sak",
+      "Gjødselplanlegging, gjødselplan i landbruket",
+      "Henvendelser til byggesak",
+      "HMS - helse, miljø og sikkerhet",
+      "Høringssaker",
+      "Installasjon av vannmåler",
+      "Internkontroll - avviksmeldinger",
+      "Jordskiftesak ",
+      "Kalking",
+      "Kjøp av eiendom (kommunal overtagelse)",
+      "Klagesak",
+      "Kommunale avgifter",
+      "Kommunale låneopptak",
+      "Landbruksveier - skogsveier (søknader om bygging)",
+      "Ledsagerbevis",
+      "Matrikkelen - Ajourføring av DEK",
+      "Matrikkelføring av byggesak i Lillesand kommune",
+      "Oppmålingsforretning",
+      "Parkeringstillatelse for forflytningshemmede",
+      "Personalmapper",
+      "Plansaker",
+      "Produksjonstilskudd i jordbruket",
+      "Refusjonskrav fra Birkenes kommune og tilskudd inn",
+      "Refusjonskrav til Birkenes kommune",
+      "Reguleringsplaner (L12)",
+      "Saker om eiendomsskatt (klager og henvendelser)",
+      "Salg av kommunal eiendom (overdragelse til privat)",
+      "Salgs- og skjenkebevillinger",
+      "Samarbeidsutvalget (SU)",
+      "Sammenslåing av eiendommer",
+      "Samordning av Lokale kriminal.forebyggende Tiltak",
+      "Seksjonering - oppdeling i eierseksjoner",
+      "Sosi-filer i byggesaker og arealplansaker",
+      "Spesialundervisning skole - gjesteelever",
+      "Startlån",
+      "Stillingsutlysning - ansettelsessak",
+      "Stortingsvalg, kommunestyre- og fylkestingsvalg",
+      "Søknad om konsesjon på erverv av fast eiendom",
+      "Søknad om kulturmidler",
+      "Søknader om erstatning etter avlingssvikt",
+      "Søknader om korttidspermisjoner - 1-7 dager",
+      "Søknader om spillemidler",
+      "Tilknytning til offentlig vann- og avløpsanlegg",
+      "Tilskudd til drenering av jordbruksjord",
+      "Tilskudd til generelle miljøtiltak i jordbruket",
+      "Tilskudd til spesielle miljøtiltak i jordbruket ",
+      "Tilsynssak",
+      "Trafikksikkerhet - trafikksikkerhetsutvalget",
+      "TV-aksjonen",
+      "Utleie",
+      "Vei Vann Avkjørsel",
+      "Viltnemndsaker"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "4225",
+   "name": "Lyngdal",
+   "slug": "lyngdal",
+   "searchPath": "sok-i-postlisten",
+   "portalId": 31,
+   "menypunktId": 561,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Anbudssak",
+      "Ansettelsesssaker",
+      "Avløsertilskuddsak",
+      "Avtaler",
+      "Byggesak",
+      "Bygging av landbruksvei",
+      "Delingssak",
+      "Foreldrenes arbeidsutvalg",
+      "Fritak fra boplikt",
+      "Generell sak",
+      "Gjødselsaker",
+      "Gravetillatelse",
+      "Høringer",
+      "Jordskiftesak",
+      "Kjøp av eiendom (overdragelse til kommunen)",
+      "Klagesak",
+      "Kommunale eiendomsgebyr",
+      "Kommunale veier",
+      "Konsesjonssak",
+      "Landbrukssak",
+      "Ledsagerbevis",
+      "Lyngdal kontrollutvalg",
+      "Matrikkelføring",
+      "Motorferdsel i utmark",
+      "Møtesak",
+      "Nydyrking",
+      "Oppmålingsforretning/kartforretning",
+      "Oppmålingsssak",
+      "Parkeringstillatelse",
+      "Partsinnsyn i eldre arkiv",
+      "Plansak",
+      "Produksjons- og avløsertilskudd",
+      "Prosjekt",
+      "Rammeavtaler OFA",
+      "Regionalt miljøtilskudd (RMP)",
+      "Salg av kommunal eiendom (overdragelse til privat)",
+      "Salgsbevilling",
+      "Samarbeidsutvalg (SU)",
+      "Seksjoneringssak",
+      "Serveringsbevilling",
+      "Skjenkebevilling",
+      "Skogfond",
+      "Spesielle miljøtiltak i jordbruket (SMIL)",
+      "Spillemidler",
+      "Startlån",
+      "Tilskuddssak",
+      "Tilsynssak",
+      "Trafikksikkerhet",
+      "TT-kort - Transporttjenesten for funksjonshemmede",
+      "Utleiesaker",
+      "Vann og avløpsaker",
+      "Viltforvaltning"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "4228",
+   "name": "Sirdal",
+   "slug": "sirdal",
+   "searchPath": "sok",
+   "portalId": 4,
+   "menypunktId": 96,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Ansettelsessak",
+      "Barnehagesak",
+      "Bostøttesak",
+      "Byggesak",
+      "Delingsak",
+      "Elevsak",
+      "Generell sak",
+      "Landbrukssak",
+      "Motorferdsel i utmark",
+      "Møtesak",
+      "Personalsak",
+      "Plansak",
+      "Sirdalsgoder",
+      "Tilsyn",
+      "Vigselssak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "4618",
+   "name": "Ullensvang",
+   "slug": "ullensvang",
+   "searchPath": "sok-etter-saker-og-dokument",
+   "portalId": 81,
+   "menypunktId": 1334,
+   "datasources": [
+    {
+     "id": "d572b5cb-461a-4e0e-87e7-d3e2cfccc410",
+     "name": "Postliste",
+     "caseTypes": [
+      "Avtale",
+      "Branntilsyn",
+      "Byggesak",
+      "Elevsak",
+      "Generell sak",
+      "Innfordring",
+      "Innsynsførespurnader",
+      "Landbruk",
+      "Oppmåling / Deling",
+      "Personalsak -Oppdragsavtale støtte-/fritidskontakt",
+      "Plansak",
+      "Prosjektsak",
+      "Sanitærabonnement",
+      "Seksjonering",
+      "Tilsetting/stilling",
+      "Utleige av bustader",
+      "Utslepp av sanitært og kommunalt avløpsvatn",
+      "Utval / Møte"
+     ]
+    },
+    {
+     "id": "0a336fc1-178f-4c38-8f38-3c7bd5ffdbe6",
+     "name": "Politiske saker",
+     "caseTypes": [
+      "Avtale",
+      "Byggesak",
+      "Generell sak",
+      "Landbruk",
+      "Oppmåling / Deling",
+      "Plansak",
+      "Prosjektsak",
+      "Utval / Møte"
+     ]
+    },
+    {
+     "id": "83b98376-0f1d-44e9-af8b-28760b244dd7",
+     "name": "Ullensvang 2002-2019",
+     "caseTypes": [
+      "Avtalar ",
+      "Barnehage/SFO",
+      "Branntilsyn",
+      "Bustad sak",
+      "Byggesak",
+      "Delingsak",
+      "Enkel sak",
+      "Landbrukssak",
+      "Møtesaker",
+      "Planarkivsak"
+     ]
+    },
+    {
+     "id": "d4642245-ab99-42b5-812a-d9c813e450e1",
+     "name": "Jondal 1998-2019",
+     "caseTypes": [
+      "Byggesak",
+      "Delingssak",
+      "Elektronisk post",
+      "Enkel sak",
+      "Plansak",
+      "Reguleringssaker"
+     ]
+    },
+    {
+     "id": "eb8f4146-3467-41ec-bfe1-c4f5061abf4f",
+     "name": "Odda 2001-2019",
+     "caseTypes": [
+      "Byggesak",
+      "Delingsak",
+      "Elektronisk post",
+      "Enkel sak",
+      "Landbruk",
+      "Oppmålingssak",
+      "Personalmappe",
+      "Personalmappe vikarer",
+      "Plansaker",
+      "Prosjekt",
+      "Reguleringssak",
+      "Sak tilhørende politiske utvalg / møter",
+      "Sanitærabonnement",
+      "Stilling/ansettelse"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "4627",
+   "name": "Askøy",
+   "slug": "askoy",
+   "searchPath": "sok",
+   "portalId": 9,
+   "menypunktId": 265,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Avdelingsmøter",
+      "Avtaler - Mercell integrasjon",
+      "Avvik - Personopplysninger",
+      "Barnehage - Frikjøp",
+      "Barnehage - Refusjonskrav for barn i private BHG",
+      "Barnehage - Ressurser minoritetsspråklige barn",
+      "Barnehage - ROS",
+      "Barnehage - Vigilo - Foreldrebetaling",
+      "Barnehagesak - Dokumentilsyn",
+      "Bolig - Kommunale utleieboliger",
+      "Boligsosial enhet - Bostøtte",
+      "Brann -   Oljefyrt ildsted / Oljetank",
+      "Brann -  Innmelding av farlig stoff",
+      "Brann -  Installasjon av ildsted",
+      "Brann - Branntilsyn",
+      "Brann - Dispensasjon fra forbudet mot bålbrenning",
+      "Brann - Feiing",
+      "Brann - Salg og oppbevaring av fyrverkeri",
+      "Byggesak",
+      "Delegering av myndighet",
+      "Delingssak",
+      "Dødsbo i landbrukseiendom",
+      "Eiendom",
+      "Eiendom - Prosjekt - Morsmappe",
+      "Eiendom - Prosjekt - Undermappe",
+      "Eiendomsforvaltning",
+      "Eiendomskatt",
+      "Elev -  Skolegang i annen kommune",
+      "Elev - Logopedi skole",
+      "ELEV - Vigilo - Foreldrebetaling",
+      "FAU Skole",
+      "Forvaltning - Bygg",
+      "Forvaltning - Eiendom",
+      "Forvaltning - Hjortevald",
+      "Forvaltning - Klescontainere",
+      "Forvaltning - Trefelling",
+      "Generell sak",
+      "Historisk arkivbase 13.03.2013 - 01.06.2022",
+      "HR - Webcruiter AS - Rekruttering",
+      "Innsyn - Innsynsforespørsel i dokumenter",
+      "Innsyn - Innsynsforespørsel i dokumenter- Avslag",
+      "Innsyn - Personregistert",
+      "Innsynsforespørsel - Braarkiv",
+      "Innsynsforespørsel - Plan og bygg",
+      "Innsynsforespørsel - Plan og bygg - Avslag",
+      "Innsynsforespørsel - Teknisk sektor",
+      "Innsynsforespørsel - Teknisk sektor - Avslag",
+      "Interpellasjon",
+      "Klagenemda",
+      "Kommunalt tilskudd - Private barnehage",
+      "Kommuneadvokat - Salgsbevilling",
+      "Kommuneadvokat - Serveringsbevilling",
+      "Kommuneadvokat - Skjenkebevilling",
+      "Konkurranser - Mercell integrasjon",
+      "Kultur - Den kulturelle spaserstokken",
+      "Kultur - Lag og organisasjoner",
+      "Kultur - Spillemidler",
+      "Kultur - Tilskudd - Kultur og idrett",
+      "Kultur - Tilskudd - Reise unge talenter",
+      "Kulturskolen - Søknad om redusert egenandel",
+      "Kundetorget - Ambulerende skjenkebevilling",
+      "Landbruk  - Egenerklæring",
+      "Landbruk - Konsesjon",
+      "Landbruk - Produksjonstilskudd/Avløser",
+      "Landbruk - Skadefelling grågås",
+      "Landbruk - Skadefelling hjort",
+      "Landbruk - Skogfond og tilskudd",
+      "Landbruk - SMIL",
+      "Landbruk - Tilskudd til regionalt miljøprogram",
+      "Landbruk -Jordlovsbehandling",
+      "Landbrukssak",
+      "Landbrukssak - Uten flyt",
+      "Lover og forskrifter",
+      "Miljø  - Tilsyn med avløp",
+      "Miljø - Utslipp",
+      "Miljø - Utslipp - Uten flyt",
+      "Miljørettet helsevern  - Tilsyn helse og miljø",
+      "Miljørettet helsevern - Hudpleievirksomhet",
+      "Miljørettet helsevern - Vannprøver",
+      "Møtesak",
+      "Nærværsutvalg",
+      "Oppmåling - Adressetildeling",
+      "Oppmåling - Jordskiftesak",
+      "Oppmåling - Retting i matrikkelen - Bygningsareal",
+      "Oppmåling - Retting i matrikkelen - Eiendomskart",
+      "Oppmålingssak",
+      "Personalmappe - Fysioterapeut med driftsavtale",
+      "Personalmappe - Ikke ansatte",
+      "Personalmappe - Innleid arbeidskraft",
+      "Personopplysninger - GDPR",
+      "Plansak",
+      "Plansak - Uten flyt",
+      "Samarbeidsutvalget (SU)",
+      "Samferdsel - Bruk av avkjørsel",
+      "Samferdsel - Disp fra byggegrense mot kommunal vei",
+      "Samferdsel - Nedklassifisering av kommunale veier",
+      "Samferdsel - Skilt - Fylkesveier",
+      "Samferdsel - Skiltvedtak",
+      "Samferdsel - Utvidet bruk av avkjørsel",
+      "Samferdsel - Vei",
+      "Seksjonering",
+      "Skole",
+      "Skole -  Leie av skolerom",
+      "Skole -  Skoleruten",
+      "Skole - Eksamen i grunnskolen",
+      "Utbygging - Prosjekt",
+      "VA forvaltning - Slamtømming",
+      "Vann og avløp",
+      "Vann og avløp - Avgifter",
+      "Vann og avløp - Drift",
+      "Vann og avløp - Grunnerverv og rettighetserverv",
+      "Vann og avløp - Kommunal overtagelse",
+      "Vann og avløp - Prosjekt",
+      "Vann og avløp - Pålegg om sanering",
+      "Vann og avløp - Pålegg til VA",
+      "Vann og avløp - Tilknytting til VA",
+      "Vann og avløp - Tiltak nært VA- Anlegg",
+      "Vann og avløp - Vannmåler - Installasjon",
+      "Vann og avløp - Vannmåler - Oppfølgning",
+      "Vigsel",
+      "VVA sak",
+      "Økonomi - Tvangssalg"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "4642",
+   "name": "Lærdal",
+   "slug": "lardal",
+   "searchPath": "sok",
+   "portalId": 118,
+   "menypunktId": 1962,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "BRANN",
+      "Byggesak",
+      "Delingsak",
+      "Elevmappe",
+      "Elevsak",
+      "Enkel sak",
+      "Innsyn",
+      "Kulturskule",
+      "Landbrukssak",
+      "Personalsak",
+      "Plansaker",
+      "Skjenkesak",
+      "Tilsetjingssaker",
+      "Vigselsak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5025",
+   "name": "Røros",
+   "slug": "roros",
+   "searchPath": "postliste",
+   "portalId": 27,
+   "menypunktId": 505,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Adresse-vedtak",
+      "Avgifter",
+      "Brannforebygging",
+      "Byggesak",
+      "Delingssak",
+      "Eierskap",
+      "Generell sak",
+      "Juridiske avtaler",
+      "Kommunal bolig",
+      "Motorferdsel",
+      "Møtesak",
+      "Oppmålingssak",
+      "Personalsak",
+      "Plansak",
+      "Skjenkesak",
+      "Tilsettingssak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5503",
+   "name": "Harstad",
+   "slug": "harstad",
+   "searchPath": "sok",
+   "portalId": 32,
+   "menypunktId": 576,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Anmeldelse",
+      "Anskaffelsessak",
+      "Automatisk brannalarmtilknytning",
+      "Barnehagemappe",
+      "Barnevern",
+      "Beredskap",
+      "Bostøtte",
+      "Byggesak",
+      "Delingssak",
+      "Eiendomsskatt",
+      "Elevmappe",
+      "Erstatning",
+      "Foreldrebetaling",
+      "Forurensning/miljø",
+      "Fyrverkeri",
+      "Generell sak",
+      "Helse",
+      "Innkjøp",
+      "Innkreving",
+      "Innsyn",
+      "Klager",
+      "Klager - Byggesak",
+      "Kommunal bolig",
+      "Kommunal eiendom",
+      "Kommunale avgifter",
+      "Kommunale tjenester",
+      "Landbrukssak",
+      "Ledsagerbevis",
+      "Mapper hos PPT",
+      "Miljørettet helsevern",
+      "Motorferdsel",
+      "Oppfølging russaker",
+      "Oppmålingssak",
+      "Parkering",
+      "Parkeringstillatelse forflytningshemmede",
+      "Plansak",
+      "Politiske saker",
+      "Rekrutteringssak",
+      "Sakstype for oppdragsavtaler",
+      "Seksjoneringssak",
+      "Skjenke-/salgsbevilling",
+      "Startlån",
+      "Testsak",
+      "Tilskudd",
+      "Tilsyn",
+      "Trafikksikkerhetstiltak",
+      "TT-kort",
+      "Ulovlighetsoppfølging",
+      "Utendørsarrangementer",
+      "Valg",
+      "Vann og avløp",
+      "Varslingssak om kritikkverdige forhold",
+      "Vei",
+      "Vielser",
+      "VVA sak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5510",
+   "name": "Kvæfjord",
+   "slug": "kvafjord",
+   "searchPath": "sok",
+   "portalId": 130,
+   "menypunktId": 2151,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Ansettelsessak",
+      "Byggesak",
+      "Delesak",
+      "Generell sak",
+      "Klientmappe",
+      "Landbruksak",
+      "Møtesaker",
+      "Oppmålingsak",
+      "Plansak",
+      "Vei- Vann og Avløp saker"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5522",
+   "name": "Salangen",
+   "slug": "salangen",
+   "searchPath": "sok",
+   "portalId": 112,
+   "menypunktId": 1863,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Barnehagesak",
+      "Byggesak",
+      "Delesak",
+      "Elevsak",
+      "Generell sak",
+      "Landbrukssak",
+      "Motorferdsel i utmark",
+      "Personalsak",
+      "Plansak",
+      "Startlån og tilskudd",
+      "Tilsettingssak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5524",
+   "name": "Målselv",
+   "slug": "malselv",
+   "searchPath": "sok",
+   "portalId": 126,
+   "menypunktId": 2091,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Branntilsyn",
+      "Byggesak",
+      "Delesak",
+      "Generell sak",
+      "Landbrukssak",
+      "Lånetaker",
+      "Møtedokumentasjon",
+      "Oppmålingssak",
+      "Personalsak",
+      "Plansak",
+      "Tilsettingssak",
+      "Tilskuddssak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5526",
+   "name": "Sørreisa",
+   "slug": "sorreisa",
+   "searchPath": "sok",
+   "portalId": 128,
+   "menypunktId": 2121,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Byggesak",
+      "Delesak",
+      "Generell sak",
+      "Ledsagerbevis",
+      "Møtedokumentasjon",
+      "Oppmålingssak",
+      "Personalsak",
+      "Plansak",
+      "Startlån"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5532",
+   "name": "Balsfjord",
+   "slug": "balsfjord",
+   "searchPath": "sok",
+   "portalId": 115,
+   "menypunktId": 1909,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Barnehagesak",
+      "Brannforebygging",
+      "Byggesak/forhåndskonferanse",
+      "Delingssak",
+      "Generell sak",
+      "Innkjøpssak",
+      "Klientsak",
+      "Landbrukssak",
+      "Likningssak",
+      "Motorferdsel",
+      "Møtesak",
+      "Oppmålingssak",
+      "Oppmålingsssak",
+      "Plansak",
+      "Rekrutteringssak",
+      "Seksjoneringssak",
+      "Skjenkesak",
+      "Tilsynssak",
+      "Vei, vann og avløp"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5536",
+   "name": "Lyngen",
+   "slug": "lyngen",
+   "searchPath": "sok",
+   "portalId": 132,
+   "menypunktId": 2185,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Avløp tilsyn",
+      "Byggesak",
+      "Delingssak",
+      "Dokumenter til Profil",
+      "Elevsak",
+      "Generell sak",
+      "Landbrukssak",
+      "Møtesak",
+      "Oppmålingsssak",
+      "Plansak",
+      "Salgs- og skjenkeløyve",
+      "Seksjoneringssak",
+      "Startlån/Husbank",
+      "Vei, vann og avløp",
+      "Vigsel"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5538",
+   "name": "Storfjord",
+   "slug": "storfjord",
+   "searchPath": "sok",
+   "portalId": 104,
+   "menypunktId": 1691,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Byggesak",
+      "Delingssak",
+      "Generell sak",
+      "Møtesak",
+      "Personalsak",
+      "Plansak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5542",
+   "name": "Skjervøy",
+   "slug": "skjervoy",
+   "searchPath": "postliste",
+   "portalId": 107,
+   "menypunktId": 1736,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Byggesak",
+      "Delingssak",
+      "Elevsak",
+      "Generell sak",
+      "Interaxo",
+      "Møtesak",
+      "Personalsak",
+      "Plansak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5544",
+   "name": "Nordreisa",
+   "slug": "nordreisa",
+   "searchPath": "sok",
+   "portalId": 106,
+   "menypunktId": 1721,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Ansettelsesak",
+      "Avtalesak",
+      "Barnevernsak",
+      "Byggesak",
+      "Delingssak",
+      "Generell sak",
+      "Kontrollutvalget vedtak",
+      "Landbrukssak",
+      "Møtesak",
+      "Næringsfond",
+      "Oppmålingssak",
+      "Plansak",
+      "Seksjonering",
+      "Skjenkebevilling",
+      "Vei, Vann og Avløp"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5546",
+   "name": "Kvænangen",
+   "slug": "kvanangen",
+   "searchPath": null,
+   "portalId": null,
+   "menypunktId": null,
+   "datasources": [],
+   "note": "Portal exists but no searchable postliste/sok page was found"
+  },
+  {
+   "kommunenummer": "5618",
+   "name": "Måsøy",
+   "slug": "masoy",
+   "searchPath": "sok",
+   "portalId": 127,
+   "menypunktId": 2106,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Ansettelsessak",
+      "Anskaffelser",
+      "Avtalesak",
+      "Barnehage",
+      "Brann",
+      "Byggesak",
+      "Eiendomssak",
+      "Kommunal bolig",
+      "Kommunale avgifter",
+      "Motorferdselssak",
+      "Møtesak",
+      "Næring",
+      "Plansak",
+      "Skjenkebevillingssak",
+      "Skolemappe Havøysund",
+      "Skolesak",
+      "Standard sak",
+      "Standard sak MNH"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5620",
+   "name": "Nordkapp",
+   "slug": "nordkapp",
+   "searchPath": "sok",
+   "portalId": 12,
+   "menypunktId": 311,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Bevillingssak",
+      "Byggesak",
+      "Delingssak",
+      "Eiendomssak",
+      "Generell sak",
+      "Meglerpakke",
+      "Møtesak",
+      "Plansak",
+      "Testsak",
+      "Tilskuddssak"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5622",
+   "name": "Porsanger",
+   "slug": "porsanger",
+   "searchPath": "offentlig-postliste",
+   "portalId": 95,
+   "menypunktId": 1553,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Ansettelsessak",
+      "Budsjett",
+      "Byggesak",
+      "Cubit",
+      "Delingsak",
+      "Elevsak",
+      "Generell sak",
+      "Komtek Brannforebygg boligsikkerhet",
+      "Landbrukssak",
+      "lokale og nasjonale valg",
+      "Motorferdsel",
+      "Møtesak",
+      "Plansak",
+      "Salgs-, skjenke-, serveringsbevilling",
+      "Vigsel"
+     ]
+    }
+   ]
+  },
+  {
+   "kommunenummer": "5624",
+   "name": "Lebesby",
+   "slug": "lebesby",
+   "searchPath": "sok-etter-saker-og-dokumenter",
+   "portalId": 82,
+   "menypunktId": 1474,
+   "datasources": [
+    {
+     "id": null,
+     "name": "Journal",
+     "caseTypes": [
+      "Adressesak",
+      "Anskaffelsessak",
+      "Beredskap brannvern",
+      "Betalingfritak for kultur- og idrettsbygg",
+      "Byggesak",
+      "Delingssak",
+      "Egenerklæring for konsesjonsfrihet",
+      "Forebyggende brannvern",
+      "Generell sak",
+      "Innleid bolig fra privat utleier",
+      "Innsynsbegjæring",
+      "Kommunal bolig",
+      "Landbrukssak",
+      "Motorferdsel",
+      "Oppmålingssak",
+      "Parkeringstillatelse forflytningshemmede",
+      "Plansak",
+      "Politisk",
+      "Rekrutteringssak",
+      "Saker fra Møte+",
+      "Seksjoneringssak",
+      "Skjenke-/salgsbevilling",
+      "Startlån",
+      "Tilskudd",
+      "Tilskudd til nyfødte",
+      "Tilsyn",
+      "Valg sak",
+      "Vann og avløp",
+      "Vei"
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "acos-innsyn": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/src/mcp.js"]
+    }
+  }
+}

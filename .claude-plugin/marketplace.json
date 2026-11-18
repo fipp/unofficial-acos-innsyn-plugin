@@ -1,0 +1,11 @@
+{
+  "name": "unofficial-acos-innsyn",
+  "owner": { "name": "fipp" },
+  "plugins": [
+    {
+      "name": "acos-innsyn",
+      "source": "./",
+      "description": "Search and download from Norwegian kommuner's ACOS Innsyn+ journals (byggesaker, postlister). Unofficial."
+    }
+  ]
+}

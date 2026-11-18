@@ -1,0 +1,26 @@
+{
+  "name": "unofficial-acos-innsyn",
+  "version": "0.1.0",
+  "description": "Unofficial client, CLI and MCP server for Norwegian kommuner's ACOS Innsyn+ journals (innsynpluss.onacos.no).",
+  "type": "module",
+  "bin": {
+    "acos-innsyn": "src/cli.js",
+    "acos-innsyn-mcp": "src/mcp.js"
+  },
+  "exports": {
+    ".": "./src/client.js",
+    "./ops": "./src/ops.js",
+    "./discover": "./src/discover.js"
+  },
+  "files": ["src", "data", "scripts", ".claude-plugin", ".mcp.json", "skills", "AGENTS.md"],
+  "scripts": {
+    "registry": "node scripts/build-registry.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": { "node": ">=18.17" },
+  "peerDependencies": { "playwright": ">=1.40" },
+  "peerDependenciesMeta": { "playwright": { "optional": true } },
+  "repository": { "type": "git", "url": "git+https://github.com/fipp/unofficial-acos-innsyn-plugin.git" },
+  "license": "MIT",
+  "keywords": ["norway", "kommune", "innsyn", "postliste", "byggesak", "acos", "mcp", "claude-code-plugin"]
+}
