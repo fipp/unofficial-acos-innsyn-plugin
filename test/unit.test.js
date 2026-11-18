@@ -46,3 +46,28 @@ test('browser launch failure gives a plugin-specific explanation', async () => {
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+import { isoDate } from '../src/client.js';
+
+test('isoDate converts portal dates and leaves others alone', () => {
+  assert.equal(isoDate('05.12.2025'), '2025-12-05');
+  assert.equal(isoDate('5.1.2025'), '2025-01-05');
+  assert.equal(isoDate('2025-12-05'), '2025-12-05');
+  assert.equal(isoDate(undefined), undefined);
+  assert.equal(fileName({ date: '2025-12-05', documentId: '2025/1' }, { title: 'A (pdf, 1KB)' }), '2025-12-05_A (2025-1).pdf');
+});
+
+test('downloads are validated and written atomically', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'acos-store-'));
+  const p = new Portal({ slug: 'x', searchPath: 'sok', portalId: 1, menypunktId: 1 });
+  try {
+    assert.throws(() => p._store(Buffer.alloc(0), path.join(dir, 'a.pdf'), 'application/pdf', 'http'), /Empty file/);
+    assert.throws(() => p._store(Buffer.from('<html>'), path.join(dir, 'b.pdf'), 'application/pdf', 'http'), /Expected a PDF/);
+    const r = p._store(Buffer.from('%PDF-1.7 x'), path.join(dir, 'c.pdf'), null, 'browser');
+    assert.equal(r.contentType, 'application/pdf');
+    assert.equal(r.via, 'browser');
+    assert.deepEqual(fs.readdirSync(dir), ['c.pdf']);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

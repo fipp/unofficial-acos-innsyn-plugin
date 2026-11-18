@@ -81,6 +81,12 @@ function* walk(node) {
   if (Array.isArray(node.b)) for (const c of node.b) yield* walk(c);
 }
 
+/** "05.12.2025" -> "2025-12-05"; anything else is returned unchanged. */
+export function isoDate(d) {
+  const m = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(String(d || '').trim());
+  return m ? `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}` : d || undefined;
+}
+
 function props(node) {
   const out = {};
   for (const n of walk(node)) if (n.type === 'Property' && n.title) out[n.title] = n.text;
@@ -217,7 +223,7 @@ export class Portal {
         title: it.title?.trim(),
         type: it.type,
         caseNumber: it.properties?.saksnummer || undefined,
-        date: it.properties?.dato,
+        date: isoDate(it.properties?.dato),
         parentId: it.parentIdentifier || undefined,
       })),
     };
@@ -243,7 +249,7 @@ export class Portal {
     for (const n of walk(body)) {
       if (n.type === 'AsyncDocument' || (n.identifier?.startsWith('d-') && n !== body)) {
         const p = props(n);
-        docs.push({ id: n.identifier, title: n.title?.trim(), documentId: p.DokumentID, date: p.Dato, type: p.Dokumenttype, recipient: p.Mottaker, sender: p.Avsender });
+        docs.push({ id: n.identifier, title: n.title?.trim(), documentId: p.DokumentID, date: isoDate(p.Dato), type: p.Dokumenttype, recipient: p.Mottaker, sender: p.Avsender });
       }
     }
     const m = meta(body);
@@ -252,7 +258,7 @@ export class Portal {
       id: body.identifier,
       title: body.title?.trim(),
       caseNumber: m.FRIENDLY_ID,
-      date: pr.dato,
+      date: isoDate(pr.dato),
       caseType: pr.sakstype,
       handler: pr.saksbehandler,
       status: pr.status,
@@ -277,10 +283,10 @@ export class Portal {
       title: c.title?.trim(),
       documentId: m.FRIENDLY_ID,
       caseDocumentId: m.CASE_DOCUMENT_FRIENDLY_ID,
-      date: m.DATE,
+      date: isoDate(m.DATE),
       department: m.DEPARTMENT,
-      journalDate: texts.Journaldato,
-      letterDate: texts.Brevdato,
+      journalDate: isoDate(texts.Journaldato),
+      letterDate: isoDate(texts.Brevdato),
       files,
       orderOnly: files.length === 0,
     };
@@ -323,9 +329,12 @@ export class Portal {
       const page = await ctx.newPage();
       let saved = null;
       page.on('download', async (d) => {
+        const tmp = `${destPath}.browser`;
         fs.mkdirSync(path.dirname(destPath), { recursive: true });
-        await d.saveAs(destPath);
-        saved = { path: destPath, bytes: fs.statSync(destPath).size, contentType: 'application/octet-stream (browser download)' };
+        await d.saveAs(tmp);
+        const buf = fs.readFileSync(tmp);
+        fs.rmSync(tmp, { force: true });
+        try { saved = this._store(buf, destPath, null, 'browser'); } catch (e) { saved = { error: e }; }
       });
       if (process.env.ACOS_INNSYN_DEBUG) { page.on('response', (r) => process.stderr.write(`[browser] ${r.status()} ${r.url().slice(0, 90)}\n`)); }
       await page.goto(fileUrl).catch(() => { /* navigation turns into a download */ });
@@ -342,10 +351,22 @@ export class Portal {
         fs.writeFileSync(path.join(cacheDir(), 'clearance.json'), JSON.stringify({ value: cookie.value, ua: this.clearanceUa, expires }));
       }
       if (!saved && !cookie) throw new InnsynError("The portal's firewall (Azure WAF) is refusing file downloads from this network right now, probably because of recent request volume. Wait 10-30 minutes and try again; already downloaded files are skipped. Search and metadata still work.");
+      if (saved?.error) throw saved.error;
       return saved;
     } finally {
       await browser.close();
     }
+  }
+
+  /** Check a downloaded buffer and write it atomically (via .part). */
+  _store(buf, destPath, contentType, via) {
+    if (!buf.length) throw new InnsynError(`Empty file received for ${path.basename(destPath)}`);
+    const isPdf = buf.subarray(0, 5).toString('latin1') === '%PDF-';
+    if (/\.pdf$/i.test(destPath) && !isPdf) throw new InnsynError(`Expected a PDF for ${path.basename(destPath)} but got something else (${contentType || 'unknown type'}); not saved.`);
+    fs.mkdirSync(path.dirname(destPath), { recursive: true });
+    fs.writeFileSync(`${destPath}.part`, buf);
+    fs.renameSync(`${destPath}.part`, destPath);
+    return { path: destPath, bytes: buf.length, contentType: isPdf ? 'application/pdf' : (contentType || 'application/octet-stream'), via };
   }
 
   async _plainFetch(full, destPath) {
@@ -353,11 +374,7 @@ export class Portal {
     const res = await this._fetch(full, {}, { useClearanceUa: true });
     const buf = Buffer.from(await res.arrayBuffer());
     const ct = res.headers.get('content-type') || '';
-    if (res.status === 200 && !ct.includes('text/html')) {
-      fs.mkdirSync(path.dirname(destPath), { recursive: true });
-      fs.writeFileSync(destPath, buf);
-      return { path: destPath, bytes: buf.length, contentType: ct };
-    }
+    if (res.status === 200 && !ct.includes('text/html')) return this._store(buf, destPath, ct, 'http');
     if (res.status !== 403) throw new InnsynError(`File download returned HTTP ${res.status}`);
     return null;
   }
@@ -370,17 +387,25 @@ export class Portal {
     let r = await this._plainFetch(full, destPath);
     if (r) return r;
     try { fs.rmSync(path.join(cacheDir(), 'clearance.json')); } catch { /* none */ }
-    r = await this._browserFetch(full, destPath);
-    if (r) return r;
-    r = await this._plainFetch(full, destPath);
-    if (r) return r;
+    // The challenge occasionally fails once and passes on the next try; give it one more chance.
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        r = await this._browserFetch(full, destPath);
+      } catch (e) {
+        if (attempt === 0 && /firewall \(Azure WAF\) is refusing/.test(e.message)) { await sleep(5000); continue; }
+        throw e;
+      }
+      if (r) return r;
+      r = await this._plainFetch(full, destPath);
+      if (r) return r;
+    }
     throw new InnsynError("The portal's firewall (Azure WAF) is refusing file downloads from this network right now, probably because of recent request volume. Wait 10-30 minutes and try again; already downloaded files are skipped. Search and metadata still work.");
   }
 }
 
 /** Safe file name: "YYYY-MM-DD_<title> (<documentId>).<ext>". */
 export function fileName(doc, file) {
-  const iso = (doc.date || '').split('.').reverse().join('-');
+  const iso = isoDate(doc.date) || '';
   const ext = (/\((\w+), [\d,.]+\s*[KMG]?B\)$/i.exec(file.title)?.[1] || 'pdf').toLowerCase();
   const t = file.title.replace(/\s*\(\w+, [\d,.]+\s*[KMG]?B\)$/i, '').replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').trim().slice(0, 120);
   const id = (doc.documentId || '').replace(/\//g, '-');

@@ -6,7 +6,7 @@ import path from 'node:path';
 import os from 'node:os';
 import * as ops from './ops.js';
 
-const VERSION = '0.2.1';
+const VERSION = '0.2.2';
 const PROTOCOL = '2025-06-18';
 
 const kommune = { type: 'string', description: 'Kommune: portal slug (baerum), name (Bærum) or kommunenummer (3201).' };
@@ -14,7 +14,7 @@ const kommune = { type: 'string', description: 'Kommune: portal slug (baerum), n
 const TOOLS = [
   {
     name: 'list_portals',
-    description: 'List Norwegian kommuner known to publish their journal (postliste, byggesaker, politiske saker) on ACOS Innsyn+ (innsynpluss.onacos.no), with each portal\'s data sources and a hasByggesak flag. Use with_source to filter, e.g. "bygg" for kommuner with byggesaker. Portals with no sources carry a note.',
+    description: 'List Norwegian kommuner known to publish their journal (postliste, byggesaker, politiske saker) on ACOS Innsyn+ (innsynpluss.onacos.no), with each portal\'s data sources and a hasByggesak flag (true = byggesaker are labelled as a source or sakstype; null = not labelled, but the journal may still contain them, so search it anyway). Use with_source to filter, e.g. "bygg" for kommuner with byggesaker. Portals with no sources carry a note.',
     inputSchema: { type: 'object', properties: { with_source: { type: 'string', description: 'Regex/fragment matched against data source names AND the case types (sakstyper) inside them. Many portals have one source called "Journal" whose case types include Byggesak, so "bygg" matches those too.' } } },
     run: (a) => ops.listPortals({ withSource: a.with_source }),
   },
@@ -49,7 +49,7 @@ const TOOLS = [
   },
   {
     name: 'get_case',
-    description: 'Get a case (arkivsak, id starting "a-") with date, caseType, handler, status and its list of published documents. The list does not say whether a document has files; set with_files to add fileCount and orderOnly per document (one extra request per document, max 30).',
+    description: 'Get a case (arkivsak, id starting "a-") with date (ISO), caseType, handler, status (the portal's own Norwegian text, e.g. "Under behandling", "Avsluttet") and its list of published documents. The list does not say whether a document has files; set with_files to add fileCount and orderOnly per document (one extra request per document, max 30).',
     inputSchema: { type: 'object', properties: { kommune, case_id: { type: 'string' }, with_files: { type: 'boolean' } }, required: ['kommune', 'case_id'] },
     run: (a) => ops.getCase(a.kommune, a.case_id, { withFiles: a.with_files }),
   },

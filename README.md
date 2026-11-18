@@ -116,14 +116,14 @@ eInnsyn is still the right place for state bodies (Statsforvalteren, Statens veg
 | 3228 | Nes | `nes` | Journal | yes |
 | 3230 | Gjerdrum | `gjerdrum` | Innsyn Gjerdrum Postliste; Innsyn Gjerdrum Historisk 01 | yes |
 | 3234 | Lunner | `lunner` | Arkiv fra 2019 til d.d.; Møtesaker fra før 2019 | yes |
-| 3236 | Jevnaker | `jevnaker` | (no journal found) | no |
+| 3236 | Jevnaker | `jevnaker` | (no journal found) | not labelled |
 | 3238 | Nannestad | `nannestad` | Journal | yes |
 | 3240 | Eidsvoll | `eidsvoll` | Journal | yes |
 | 3242 | Hurdal | `hurdal` | Journal | yes |
 | 3305 | Ringerike | `ringerike` | Journal | yes |
 | 3310 | Hole | `hole` | Saker fra mai 2026; Historiske saker 2007-2026 | yes |
 | 3316 | Modum | `modum` | Arkiv fra mai 2021; Historisk arkiv 2013-2021 | yes |
-| 3416 | Eidskog | `eidskog` | Journal | no |
+| 3416 | Eidskog | `eidskog` | Journal | not labelled |
 | 3430 | Os | `os` | Journal | yes |
 | 3447 | Søndre Land | `sondre-land` | Journal | yes |
 | 3448 | Nordre Land | `nordre-land` | Journal | yes |
@@ -151,7 +151,7 @@ eInnsyn is still the right place for state bodies (Statsforvalteren, Statens veg
 | 5538 | Storfjord | `storfjord` | Journal | yes |
 | 5542 | Skjervøy | `skjervoy` | Journal | yes |
 | 5544 | Nordreisa | `nordreisa` | Journal | yes |
-| 5546 | Kvænangen | `kvanangen` | (no journal found) | no |
+| 5546 | Kvænangen | `kvanangen` | (no journal found) | not labelled |
 | 5618 | Måsøy | `masoy` | Journal | yes |
 | 5620 | Nordkapp | `nordkapp` | Journal | yes |
 | 5622 | Porsanger | `porsanger` | Journal | yes |

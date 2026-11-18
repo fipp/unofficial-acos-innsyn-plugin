@@ -51,7 +51,8 @@ export function listPortals({ withSource } = {}) {
       name: p.name,
       kommunenummer: p.kommunenummer,
       datasources: (p.datasources || []).map((d) => d.name),
-      hasByggesak: (p.datasources || []).some((d) => /bygg/i.test(d.name) || d.caseTypes?.some((t) => /bygg/i.test(t))),
+      // true: byggesaker are labelled (source name or sakstype). null: not labelled; the journal may still hold them.
+      hasByggesak: (p.datasources || []).some((d) => /bygg/i.test(d.name) || d.caseTypes?.some((t) => /bygg/i.test(t))) ? true : null,
       ...(p.datasources?.length ? {} : { note: 'Portal exists, but no searchable journal was found (meetings only, or an unknown page layout).' }),
     })),
   };
@@ -69,7 +70,12 @@ async function sources(p, source) {
 
 export async function datasources(kommune) {
   const p = await portal(kommune);
-  return (await sources(p)).map((d) => ({ id: d.id, name: d.name }));
+  const list = await sources(p);
+  return list.map((d) => ({
+    id: d.id,
+    name: d.name,
+    ...(d.id === null && list.length === 1 ? { note: 'Single journal; this portal has no data-source menu, so searches need no source.' } : {}),
+  }));
 }
 
 export async function search(kommune, q) {
@@ -122,11 +128,21 @@ export async function download(kommune, id, outDir, { skipExisting = true } = {}
   for (const did of docIds) {
     const doc = await p.getDocument(did);
     if (doc.orderOnly) { manifest.orderOnly.push({ id: doc.id, title: doc.title, documentId: doc.documentId, date: doc.date }); continue; }
+    const used = new Map();
     for (const f of doc.files) {
-      const dest = path.join(outDir, fileName(doc, f));
-      if (skipExisting && fs.existsSync(dest)) { manifest.files.push({ path: dest, skipped: true, document: doc.title }); continue; }
+      // Same title twice in one document (e.g. two "Situasjonsplan") -> "<name> 2.pdf", "<name> 3.pdf".
+      let name = fileName(doc, f);
+      const n = (used.get(name) || 0) + 1;
+      used.set(name, n);
+      if (n > 1) name = name.replace(/(\.[a-z0-9]+)$/i, ` ${n}$1`);
+      const dest = path.join(outDir, name);
+      const base = { document: doc.title, documentId: doc.documentId, role: f.role, file: f.title };
+      if (skipExisting && fs.existsSync(dest) && fs.statSync(dest).size > 0) {
+        manifest.files.push({ path: dest, skipped: true, bytes: fs.statSync(dest).size, ...base });
+        continue;
+      }
       const r = await p.downloadFile(f.url, dest);
-      manifest.files.push({ path: r.path, bytes: r.bytes, contentType: r.contentType, document: doc.title, documentId: doc.documentId, role: f.role });
+      manifest.files.push({ path: r.path, bytes: r.bytes, contentType: r.contentType, via: r.via, ...base });
     }
   }
   return manifest;
